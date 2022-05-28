@@ -1,0 +1,14 @@
+/* table#posiciones {
+    border: 0px solid transparent;
+} */
+
+
+table#posiciones tbody tr:hover {
+    background-color: #90EE90;
+    /* border: 1px solid #d0d0d0; */
+    cursor: pointer;
+}
+
+/* #posiciones {
+    border: transparent;
+} */

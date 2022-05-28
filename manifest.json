@@ -8,6 +8,7 @@
 	},
 	"content_scripts": [ {
 		"js": [ "content.js" ],
+		"css": [ "style/style.css" ],
 		"matches": [
 			"https://www.promiedos.com.ar/*"
 		],
@@ -21,6 +22,7 @@
 			"modules/team.model.js",
 			"modules/storage.js",
 			"modules/utils/utils.js",
+			"style/style.css",
 			"modules/utils/dom.utils.js"
 		],
 		"matches": [ "https://www.promiedos.com.ar/*" ]

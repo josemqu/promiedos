@@ -1,9 +1,14 @@
 import Team from './modules/team.model.js'
 import Match from './modules/match.model.js'
 
-console.log( 'app.js' );
+// console.log( 'app.js' );
 console.log( getTableDict() );
 console.log( getMatchWeek() );
+let obj = {};
+initObj();
+updateObj( obj );
+console.log( obj );
+
 addBtnAction();
 
 function addBtnAction() {
@@ -15,8 +20,7 @@ function actions( e ) {
 	e.stopPropagation();
 	e.preventDefault();
 	setTimeout( function() {
-		console.log( getMatchWeek() );
-		addBtnAction();
+		console.log( updateObj() );
 	}, 600 );
 }
 
@@ -104,4 +108,26 @@ function fetch( num ) {
 		// There was an error
 		console.warn( 'Something went wrong.', err );
 	} );
+}
+
+function initObj() {
+	getTeams().forEach( el => obj[ el ] = [] );
+}
+
+function updateObj() {
+	const week = getMatchWeek();
+	const arr = [];
+	week.forEach( game => {
+		arr.push( [ game._week, game.homeTeam, game._resMatch, game._finished ] );
+		arr.push( [ game._week, game.awayTeam, -1 * game._resMatch, game._finished ] );
+	} );
+	Object.keys( obj ).forEach( key => {
+		let row = arr.filter( el => el[ 1 ] == key )[ 0 ];
+		// console.log( row );
+		let weekNum = row[ 0 ];
+		let result = row[ 2 ];
+		if ( row[ 3 ] )
+			obj[ key ][ weekNum - 1 ] = result;
+	} );
+	return obj
 }
