@@ -1,0 +1,28 @@
+{
+	"manifest_version": 3,
+	"name": "Futbol Argentino",
+	"version": "0.0.1",
+	"description": "Estadísticas del Torneo de Futbol Argentino",
+	"action": {
+		"default_title": "Futbol Argentino"
+	},
+	"content_scripts": [ {
+		"js": [ "content.js" ],
+		"matches": [
+			"https://www.promiedos.com.ar/*"
+		],
+		"run_at": "document_end"
+	} ],
+	"permissions": [ "tabs", "storage", "downloads" ],
+	"web_accessible_resources": [ {
+		"resources": [
+			"app.js",
+			"modules/match.model.js",
+			"modules/team.model.js",
+			"modules/storage.js",
+			"modules/utils/utils.js",
+			"modules/utils/dom.utils.js"
+		],
+		"matches": [ "https://www.promiedos.com.ar/*" ]
+	} ]
+}
