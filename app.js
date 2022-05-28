@@ -2,7 +2,7 @@ import Team from './modules/team.model.js'
 import Match from './modules/match.model.js'
 
 console.log( 'app.js' );
-// console.log( getTableDict() );
+console.log( getTableDict() );
 console.log( getMatchWeek() );
 addBtnAction();
 
@@ -81,21 +81,6 @@ function getMatchWeek() {
 	) ) )
 	return arr;
 }
-
-// function getMatchWeekHtml() {
-// 	let arr = []
-// 	const matchWeek = getMatchWeekNumber()
-// 	document.querySelectorAll( '.datoequipo, .game-r1, .game-r2' ).forEach( x => arr.push( x.innerText ) )
-// 	arr.splice( 0, 2 )
-
-// 	const newArr = arr.reduce( ( result, value, index, array ) => {
-// 		if ( index % 4 === 0 ) {
-// 			return [ ...result, array.slice( index, index + 4 ) ];
-// 		}
-// 		return result
-// 	}, [] );
-// 	return newArr.map( el => [ matchWeek, ...el ] )
-// }
 
 function getMatchWeekNumber() {
 	return document.getElementById( 'fechmedio' ).innerText.split( '\n' )[ 0 ].split( " " )[ 1 ];
