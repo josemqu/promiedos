@@ -1,5 +1,6 @@
 import Team from './modules/team.model.js'
 import Match from './modules/match.model.js'
+import DomUtils from './modules/utils/dom.utils.js'
 
 // console.log( 'app.js' );
 console.log( getTableDict() );
@@ -10,10 +11,16 @@ updateObj( obj );
 console.log( obj );
 
 addBtnAction();
+addTableAction();
 
 function addBtnAction() {
 	document.querySelectorAll( '#flechaatr, #flechaad, .cfecha, .cfechact, #principal' )
 		.forEach( node => node.addEventListener( 'mousedown', actions, false ) );
+}
+
+function addTableAction() {
+	document.querySelectorAll( '#posiciones tbody tr' )
+		.forEach( node => node.addEventListener( 'mouseover', actions2, false ) );
 }
 
 function actions( e ) {
@@ -22,6 +29,24 @@ function actions( e ) {
 	setTimeout( function() {
 		console.log( updateObj() );
 	}, 600 );
+}
+
+function getArrows( arr ) {
+	let res = [];
+	arr.forEach( el => res.push(
+		el == 1 ? '🔺' :
+		el == -1 ? '🔻' :
+		el === 0 ? '⛔' : '❓' ) )
+	return res.join( '' )
+}
+
+function actions2( e ) {
+	e.stopPropagation();
+	e.preventDefault();
+	const team = e.target.parentElement.children[ 1 ].innerText;
+	const text = obj[ team ].slice( -5 );
+	DomUtils.toast( e, getArrows( text ) );
+
 }
 
 function getTeam( name ) {
