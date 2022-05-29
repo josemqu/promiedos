@@ -73,5 +73,51 @@ export default {
 				}, 200 );
 			} )();
 		} );
+	},
+
+	arrows( e, arr ) {
+		const div = document.createElement( 'div' );
+		const prevDiv = document.querySelector( 'div.toast' );
+		div.classList.add( 'toast' );
+		div.innerHTML = `   <div class="arrows">
+                            </div>
+	                    `
+		if ( prevDiv ) document.body.removeChild( prevDiv );
+		document.body.appendChild( div );
+		arr.forEach( ( el ) => {
+			let option = {};
+			if ( el == 1 ) {
+				option = {
+					img: 'up',
+				}
+			} else if ( el == -1 ) {
+				option = {
+					img: 'down',
+				}
+			} else {
+				option = {
+					img: 'equal',
+				}
+			}
+
+			let x = el == 1 ? 'up' : el == -1 ? 'down' : 'equal'
+			let image = document.createElement( "img" );
+			image.src = `chrome-extension://ighfojbcgjhekfgpkjojjadnodmlcgpa/modules/utils/icons/${option.img}.svg`;
+			image.setAttribute( "style", "float:left" );
+			document.querySelector( "div.arrows" ).appendChild( image );
+		} );
+		div.style.position = 'fixed';
+		div.style.zIndex = '10';
+		div.style.borderRadius = '2px 2px 2px 2px';
+		div.style.padding = '1px';
+		div.style.color = 'rgb(20, 20, 20, 1)';
+		div.style.backgroundColor = 'rgb(49, 45, 44, 1)';
+		// div.style.border = '2px solid #FFFFFF';
+		const messures = e.target.parentElement.children[ 1 ].parentElement.getBoundingClientRect()
+
+		let x = messures.x + messures.width + 10
+		let y = messures.y - 2
+		div.style.left = `${x}px`;
+		div.style.top = `${y}px`;
 	}
 }

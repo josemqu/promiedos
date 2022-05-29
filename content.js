@@ -8,8 +8,15 @@ const styleNames = [
 	"style/style.css",
 ]
 
+const imageNames = [
+	"modules/utils/icons/up.svg",
+	"modules/utils/icons/equal.svg",
+	"modules/utils/icons/down.svg"
+]
+
 setTimeout( scriptsLoad, 1000 );
 setTimeout( stylesLoad, 1000 );
+setTimeout( imagesLoad, 1000 );
 
 function scriptsLoad() {
 	scriptNames.map( scriptName => {
@@ -27,6 +34,16 @@ function stylesLoad() {
 		// console.log( "Se cargó el script " + styleName );
 		let elem = document.createElement( 'style' );
 		elem.setAttribute( "src", chrome.runtime.getURL( styleName ) );
+		elem.onload = () => elem.remove();
+		( document.head || document.documentElement ).appendChild( elem );
+	} )
+}
+
+function imagesLoad() {
+	imageNames.map( imageName => {
+		// console.log( "Se cargó el script " + styleName );
+		let elem = document.createElement( 'img' );
+		elem.setAttribute( "src", chrome.runtime.getURL( imageName ) );
 		elem.onload = () => elem.remove();
 		( document.head || document.documentElement ).appendChild( elem );
 	} )

@@ -1,6 +1,6 @@
 {
 	"manifest_version": 3,
-	"name": "Futbol Argentino",
+	"name": "Promiedos",
 	"version": "0.0.1",
 	"description": "Estadísticas del Torneo de Futbol Argentino",
 	"action": {
@@ -23,7 +23,10 @@
 			"modules/storage.js",
 			"modules/utils/utils.js",
 			"style/style.css",
-			"modules/utils/dom.utils.js"
+			"modules/utils/dom.utils.js",
+			"modules/utils/icons/up.svg",
+			"modules/utils/icons/equal.svg",
+			"modules/utils/icons/down.svg"
 		],
 		"matches": [ "https://www.promiedos.com.ar/*" ]
 	} ]

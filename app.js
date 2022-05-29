@@ -7,8 +7,7 @@ console.log( getTableDict() );
 console.log( getMatchWeek() );
 let obj = {};
 initObj();
-updateObj( obj );
-console.log( obj );
+console.log( updateObj( obj ) );
 
 addBtnAction();
 addTableAction();
@@ -34,18 +33,20 @@ function actions( e ) {
 function getArrows( arr ) {
 	let res = [];
 	arr.forEach( el => res.push(
-		el == 1 ? '🔺' :
-		el == -1 ? '🔻' :
-		el === 0 ? '⛔' : '❓' ) )
+		el == 1 ? '✅' :
+		el == -1 ? '❌' :
+		el === 0 ? '➖' : '❓' ) )
 	return res.join( '' )
 }
 
 function actions2( e ) {
 	e.stopPropagation();
 	e.preventDefault();
-	const team = e.target.parentElement.children[ 1 ].innerText;
-	const text = obj[ team ].slice( -5 );
-	DomUtils.toast( e, getArrows( text ) );
+	const team = e.target.parentElement.children[ 1 ].innerText.replace( /\*/g, '' );
+	const text = obj[ team ] ? obj[ team ].slice( -5 ) : obj[ team ];
+	// console.log( text );
+	// DomUtils.toast( e, getArrows( text ) );
+	DomUtils.arrows( e, text );
 
 }
 
@@ -68,7 +69,7 @@ function getTeams() {
 	const names = []
 	tables.forEach( table => {
 		const namesColumn = table.querySelectorAll( 'tbody tr td:nth-child(2)' )
-		namesColumn.forEach( el => names.push( el.innerText ) );
+		namesColumn.forEach( el => names.push( el.innerText.replace( /\*/g, '' ) ) );
 	} )
 	return names
 }
