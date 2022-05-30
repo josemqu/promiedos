@@ -6,48 +6,57 @@ import DomUtils from './modules/utils/dom.utils.js'
 console.log( getTableDict() );
 console.log( getMatchWeek() );
 let obj = {};
+let team = '';
+let globalEvent;
 initObj();
 console.log( updateObj( obj ) );
 
 addBtnAction();
-addTableAction();
+addArrowsListener();
+removeArrowsListener();
 
 function addBtnAction() {
 	document.querySelectorAll( '#flechaatr, #flechaad, .cfecha, .cfechact, #principal' )
 		.forEach( node => node.addEventListener( 'mousedown', actions, false ) );
 }
 
-function addTableAction() {
+function addArrowsListener() {
 	document.querySelectorAll( '#posiciones tbody tr' )
 		.forEach( node => node.addEventListener( 'mouseover', actions2, false ) );
+}
+
+function removeArrowsListener() {
+	document.querySelectorAll( '#posiciones tbody tr' )
+		.forEach( node => node.addEventListener( 'mouseleave', actions3, false ) );
 }
 
 function actions( e ) {
 	e.stopPropagation();
 	e.preventDefault();
 	setTimeout( function() {
-		console.log( updateObj() );
+		updateObj();
+		if ( team && globalEvent ) {
+			const text = obj[ team ] ? obj[ team ].slice( -5 ) : obj[ team ];
+			DomUtils.arrows( globalEvent, text )
+		};
 	}, 600 );
-}
-
-function getArrows( arr ) {
-	let res = [];
-	arr.forEach( el => res.push(
-		el == 1 ? '✅' :
-		el == -1 ? '❌' :
-		el === 0 ? '➖' : '❓' ) )
-	return res.join( '' )
 }
 
 function actions2( e ) {
 	e.stopPropagation();
 	e.preventDefault();
-	const team = e.target.parentElement.children[ 1 ].innerText.replace( /\*/g, '' );
+	globalEvent = e;
+	team = e.target.parentElement.children[ 1 ].innerText.replace( /\*/g, '' );
 	const text = obj[ team ] ? obj[ team ].slice( -5 ) : obj[ team ];
-	// console.log( text );
-	// DomUtils.toast( e, getArrows( text ) );
-	DomUtils.arrows( e, text );
+	text.length ? DomUtils.arrows( e, text ) : false;
 
+}
+
+function actions3( e ) {
+	e.stopPropagation();
+	e.preventDefault();
+	const prevDiv = document.querySelector( 'div.arrows' );
+	if ( prevDiv ) setTimeout( () => prevDiv.remove(), 2000 );
 }
 
 function getTeam( name ) {
