@@ -36,8 +36,9 @@ function actions( e ) {
 	setTimeout( function() {
 		updateObj();
 		if ( team && globalEvent ) {
-			const text = obj[ team ] ? obj[ team ].filter( el => el != null ).slice( -5 ) : obj[ team ];
-			DomUtils.arrows( globalEvent, text )
+			const res = obj[ team ] ? obj[ team ].result.filter( el => el != null ).slice( -5 ) : obj[ team ].result;
+			const sco = obj[ team ] ? obj[ team ].score.filter( el => el != null ).slice( -5 ) : obj[ team ].score;
+			DomUtils.arrows( globalEvent, res, sco )
 		};
 	}, 600 );
 }
@@ -47,8 +48,9 @@ function actions2( e ) {
 	e.preventDefault();
 	globalEvent = e;
 	team = e.target.parentElement.children[ 1 ].innerText.replace( /\*/g, '' );
-	const text = obj[ team ] ? obj[ team ].filter( el => el != null ).slice( -5 ) : obj[ team ];
-	text.length ? DomUtils.arrows( e, text ) : false;
+	const res = obj[ team ] ? obj[ team ].result.filter( el => el != null ).slice( -5 ) : obj[ team ].result;
+	const sco = obj[ team ] ? obj[ team ].score.filter( el => el != null ).slice( -5 ) : obj[ team ].score;
+	res.length ? DomUtils.arrows( e, res, sco ) : false;
 
 }
 
@@ -146,23 +148,29 @@ function fetch( num ) {
 }
 
 function initObj() {
-	getTeams().forEach( el => obj[ el ] = [] );
+	getTeams().forEach( el => obj[ el ] = {
+		result: [],
+		score: []
+	} );
 }
 
 function updateObj() {
 	const week = getMatchWeek();
 	const arr = [];
 	week.forEach( game => {
-		arr.push( [ game._week, game.homeTeam, game._resMatch, game._finished ] );
-		arr.push( [ game._week, game.awayTeam, -1 * game._resMatch, game._finished ] );
+		arr.push( [ game._week, game.homeTeam, game._resMatch, game._finished, `${game.homeGoal} - ${game.awayGoal}` ] );
+		arr.push( [ game._week, game.awayTeam, -1 * game._resMatch, game._finished, `${game.awayGoal} - ${game.homeGoal}` ] );
 	} );
 	Object.keys( obj ).forEach( key => {
 		let row = arr.filter( el => el[ 1 ] == key )[ 0 ];
 		if ( row ) {
 			let weekNum = row[ 0 ];
 			let result = row[ 2 ];
-			if ( row[ 3 ] )
-				obj[ key ][ weekNum - 1 ] = result;
+			let score = row[ 4 ];
+			if ( row[ 3 ] ) {
+				obj[ key ].result[ weekNum - 1 ] = result;
+				obj[ key ].score[ weekNum - 1 ] = score;
+			}
 		}
 	} );
 	return obj

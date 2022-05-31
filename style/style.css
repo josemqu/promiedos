@@ -17,14 +17,14 @@ table#posiciones tbody tr:hover {
 .tooltip .tiptext {
     visibility: hidden;
     width: 60px;
-    background-color: rgb(150, 45, 44, 1);
+    background-color: #962D2C;
     color: #fff;
     text-align: center;
     border-radius: 3px;
     padding: 6px 0;
     position: absolute;
     z-index: 1;
-    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.4);
 }
 
 .tooltip .tiptext::after {
@@ -36,6 +36,7 @@ table#posiciones tbody tr:hover {
 
 .tooltip:hover .tiptext {
     visibility: visible;
+    font-weight: bold;
 }
 
 .tooltip.top .tiptext {
@@ -48,5 +49,5 @@ table#posiciones tbody tr:hover {
     margin-left: -5px;
     top: 100%;
     left: 50%;
-    border-color: rgb(150, 45, 44, 1) transparent transparent transparent;
+    border-color: #962D2C transparent transparent transparent;
 }

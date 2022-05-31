@@ -1,5 +1,5 @@
 export default {
-	arrows( e, arr ) {
+	arrows( e, arr, sco ) {
 		const div = document.createElement( 'div' );
 		const prevDiv = document.querySelector( 'div.arrows' );
 		div.classList.add( 'arrows' );
@@ -12,14 +12,12 @@ export default {
 			let div = document.createElement( "div" );
 			let image = document.createElement( "img" );
 			let span = document.createElement( 'span' );
-			let n = i + 1;
 			image.src = `chrome-extension://ighfojbcgjhekfgpkjojjadnodmlcgpa/modules/utils/icons/${x}.svg`;
 			image.setAttribute( "style", "float:left" );
-			// image.classList.add( 'arrow' + n );
 			div.classList.add( 'tooltip' );
 			div.classList.add( 'top' );
 			span.classList.add( 'tiptext' );
-			span.innerText = `${Math.round(Math.random()*3,0)} - ${Math.round(Math.random()*3,0)}`;
+			span.innerText = `${sco[i]}`;
 			document.querySelector( "div.arrows" ).append( div );
 			div.append( image );
 			div.append( span );
@@ -37,10 +35,5 @@ export default {
 		let y = messures.y - 2
 		div.style.left = `${x}px`;
 		div.style.top = `${y}px`;
-	},
-
-	tooltip( text ) {
-		const tooltip = document.createElement( 'span' );
-		tooltip.innerHTML = `<span class="tiptext">${text}</span>`;
 	}
 }
