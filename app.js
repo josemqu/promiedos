@@ -13,7 +13,7 @@ console.log( updateObj( obj ) );
 
 addBtnAction();
 addArrowsListener();
-// removeArrowsListener();
+removeArrowsListener();
 
 function addBtnAction() {
 	document.querySelectorAll( '#flechaatr, #flechaad, .cfecha, .cfechact, #principal' )
@@ -57,8 +57,12 @@ function actions2( e ) {
 function actions3( e ) {
 	e.stopPropagation();
 	e.preventDefault();
+	let tableDimensions = globalEvent.target.parentElement.parentElement.getBoundingClientRect()
+	console.log( e.clientY );
+	console.log( tableDimensions.y );
 	const prevDiv = document.querySelector( 'div.arrows' );
-	if ( prevDiv ) setTimeout( () => prevDiv.remove(), 2000 );
+	if ( prevDiv && !( e.clientY > tableDimensions.top && e.clientY < tableDimensions.bottom ) )
+		setTimeout( () => prevDiv.remove(), 0 );
 }
 
 function getTeam( name ) {
