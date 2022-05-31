@@ -1,93 +1,28 @@
 export default {
-	toast( e, text ) {
-		const div = document.createElement( 'div' );
-		const prevDiv = document.querySelector( 'div.toast' );
-		let myVar;
-		div.classList.add( 'toast' );
-		div.classList.add( 'animated' );
-		div.classList.add( 'faster' );
-		div.classList.add( 'fadeInDown' );
-		div.innerHTML = `   <table class="toast">
-                                <tbody>
-									<tr>
-										<td>
-											<img class='logo'/>
-                                    		<a>${text}</a>
-										</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        `;
-
-		if ( prevDiv ) document.body.removeChild( prevDiv );
-		document.body.appendChild( div );
-		div.style.position = 'fixed';
-		div.style.zIndex = '10';
-		( div.style.fontFamily = 'Open Sans' ), 'Santander Text';
-		div.style.fontSize = '14px';
-		// div.style.align = 'center';
-		div.style.fontWeight = 'bold';
-		// div.style.letterSpacing = '-0.2px';
-		div.style.padding = '2px';
-		div.style.color = 'rgb(20, 20, 20, 1)';
-		div.style.backgroundColor = 'rgb(234, 234, 234, 0.9)';
-		div.style.border = '2px solid #FFFFFF';
-		// div.style.borderRadius = '5px 5px 5px 5px';
-
-		const messures = e.target.parentElement.children[ 1 ].parentElement.getBoundingClientRect()
-
-		let x = messures.x + messures.width + 10
-		let y = messures.y - 5
-		div.style.left = `${x}px`;
-		div.style.top = `${y}px`;
-
-		function deleteDiv() {
-			myVar = setTimeout( () => div.remove(), 1000 );
-		}
-
-		( () => {
-			myVar = setTimeout( () => {
-				div.classList.replace( 'fadeInDown', 'fadeOut' );
-				deleteDiv();
-			}, 3000 );
-		} )();
-
-		function myStopFunction() {
-			clearTimeout( myVar );
-		}
-
-		div.addEventListener( 'mouseover', event => {
-			event.preventDefault();
-			myStopFunction();
-			div.classList.replace( 'fadeOut', 'fadeIn' );
-		} );
-
-		div.addEventListener( 'mouseleave', event => {
-			event.preventDefault();
-			( function() {
-				myVar = setTimeout( () => {
-					div.classList.replace( 'faster', 'fast' );
-					div.classList.replace( 'fadeInDown', 'fadeOut' );
-					div.classList.replace( 'fadeIn', 'fadeOut' );
-					deleteDiv();
-				}, 200 );
-			} )();
-		} );
-	},
-
 	arrows( e, arr ) {
 		const div = document.createElement( 'div' );
 		const prevDiv = document.querySelector( 'div.arrows' );
 		div.classList.add( 'arrows' );
-		div.innerHTML = `<div class="arrows"></div>`
+		// div.classList.add( 'tooltip' );
+		div.innerHTML = `<div class="arrows"></div>`;
 		if ( prevDiv ) prevDiv.remove();
 		document.body.appendChild( div );
-		arr.forEach( ( el ) => {
+		arr.forEach( ( el, i ) => {
 			let x = el == 1 ? 'up' : el == -1 ? 'down' : 'equal'
+			let div = document.createElement( "div" );
 			let image = document.createElement( "img" );
+			let span = document.createElement( 'span' );
+			let n = i + 1;
 			image.src = `chrome-extension://ighfojbcgjhekfgpkjojjadnodmlcgpa/modules/utils/icons/${x}.svg`;
 			image.setAttribute( "style", "float:left" );
-			document.querySelector( "div.arrows" ).appendChild( image );
+			// image.classList.add( 'arrow' + n );
+			div.classList.add( 'tooltip' );
+			div.classList.add( 'top' );
+			span.classList.add( 'tiptext' );
+			span.innerText = `${Math.round(Math.random()*3,0)} - ${Math.round(Math.random()*3,0)}`;
+			document.querySelector( "div.arrows" ).append( div );
+			div.append( image );
+			div.append( span );
 		} );
 		div.style.position = 'fixed';
 		div.style.zIndex = '10';
@@ -102,5 +37,10 @@ export default {
 		let y = messures.y - 2
 		div.style.left = `${x}px`;
 		div.style.top = `${y}px`;
+	},
+
+	tooltip( text ) {
+		const tooltip = document.createElement( 'span' );
+		tooltip.innerHTML = `<span class="tiptext">${text}</span>`;
 	}
 }

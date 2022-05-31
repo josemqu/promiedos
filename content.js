@@ -5,7 +5,7 @@ const scriptNames = [
 ]
 
 const styleNames = [
-	"style/style.css",
+	"./style/style.css",
 ]
 
 const imageNames = [

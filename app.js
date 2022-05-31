@@ -13,7 +13,7 @@ console.log( updateObj( obj ) );
 
 addBtnAction();
 addArrowsListener();
-removeArrowsListener();
+// removeArrowsListener();
 
 function addBtnAction() {
 	document.querySelectorAll( '#flechaatr, #flechaad, .cfecha, .cfechact, #principal' )
@@ -36,7 +36,7 @@ function actions( e ) {
 	setTimeout( function() {
 		updateObj();
 		if ( team && globalEvent ) {
-			const text = obj[ team ] ? obj[ team ].slice( -5 ) : obj[ team ];
+			const text = obj[ team ] ? obj[ team ].filter( el => el != null ).slice( -5 ) : obj[ team ];
 			DomUtils.arrows( globalEvent, text )
 		};
 	}, 600 );
@@ -47,7 +47,7 @@ function actions2( e ) {
 	e.preventDefault();
 	globalEvent = e;
 	team = e.target.parentElement.children[ 1 ].innerText.replace( /\*/g, '' );
-	const text = obj[ team ] ? obj[ team ].slice( -5 ) : obj[ team ];
+	const text = obj[ team ] ? obj[ team ].filter( el => el != null ).slice( -5 ) : obj[ team ];
 	text.length ? DomUtils.arrows( e, text ) : false;
 
 }
@@ -158,11 +158,12 @@ function updateObj() {
 	} );
 	Object.keys( obj ).forEach( key => {
 		let row = arr.filter( el => el[ 1 ] == key )[ 0 ];
-		// console.log( row );
-		let weekNum = row[ 0 ];
-		let result = row[ 2 ];
-		if ( row[ 3 ] )
-			obj[ key ][ weekNum - 1 ] = result;
+		if ( row ) {
+			let weekNum = row[ 0 ];
+			let result = row[ 2 ];
+			if ( row[ 3 ] )
+				obj[ key ][ weekNum - 1 ] = result;
+		}
 	} );
 	return obj
 }
