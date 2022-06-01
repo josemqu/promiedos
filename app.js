@@ -11,6 +11,7 @@ let globalEvent;
 initObj();
 console.log( updateObj( obj ) );
 
+
 addBtnAction();
 addArrowsListener();
 removeArrowsListener();
@@ -38,7 +39,9 @@ function actions( e ) {
 		if ( team && globalEvent ) {
 			const res = obj[ team ] ? obj[ team ].result.filter( el => el != null ).slice( -5 ) : obj[ team ].result;
 			const sco = obj[ team ] ? obj[ team ].score.filter( el => el != null ).slice( -5 ) : obj[ team ].score;
-			DomUtils.arrows( globalEvent, res, sco )
+			const vs = obj[ team ] ? obj[ team ].vs.filter( el => el != null ).slice( -5 ) : obj[ team ].vs;
+			const homeOrAway = obj[ team ] ? obj[ team ].homeOrAway.filter( el => el != null ).slice( -5 ) : obj[ team ].homeOrAway;
+			DomUtils.arrows( globalEvent, res, sco, vs, homeOrAway )
 		};
 	}, 600 );
 }
@@ -50,7 +53,9 @@ function actions2( e ) {
 	team = e.target.parentElement.children[ 1 ].innerText.replace( /\*/g, '' );
 	const res = obj[ team ] ? obj[ team ].result.filter( el => el != null ).slice( -5 ) : obj[ team ].result;
 	const sco = obj[ team ] ? obj[ team ].score.filter( el => el != null ).slice( -5 ) : obj[ team ].score;
-	res.length ? DomUtils.arrows( e, res, sco ) : false;
+	const vs = obj[ team ] ? obj[ team ].vs.filter( el => el != null ).slice( -5 ) : obj[ team ].vs;
+	const homeOrAway = obj[ team ] ? obj[ team ].homeOrAway.filter( el => el != null ).slice( -5 ) : obj[ team ].homeOrAway;
+	res.length ? DomUtils.arrows( e, res, sco, vs, homeOrAway ) : false;
 
 }
 
@@ -58,11 +63,13 @@ function actions3( e ) {
 	e.stopPropagation();
 	e.preventDefault();
 	let tableDimensions = globalEvent.target.parentElement.parentElement.getBoundingClientRect()
-	console.log( e.clientY );
-	console.log( tableDimensions.y );
 	const prevDiv = document.querySelector( 'div.arrows' );
-	if ( prevDiv && !( e.clientY > tableDimensions.top && e.clientY < tableDimensions.bottom ) )
-		setTimeout( () => prevDiv.remove(), 0 );
+	if ( prevDiv ) {
+		setTimeout( () => {
+			if ( !( e.clientY > tableDimensions.top && e.clientY < tableDimensions.bottom ) )
+				prevDiv.remove()
+		}, 2000 );
+	}
 }
 
 function getTeam( name ) {
@@ -154,7 +161,9 @@ function fetch( num ) {
 function initObj() {
 	getTeams().forEach( el => obj[ el ] = {
 		result: [],
-		score: []
+		score: [],
+		vs: [],
+		homeOrAway: []
 	} );
 }
 
@@ -162,8 +171,8 @@ function updateObj() {
 	const week = getMatchWeek();
 	const arr = [];
 	week.forEach( game => {
-		arr.push( [ game._week, game.homeTeam, game._resMatch, game._finished, `${game.homeGoal} - ${game.awayGoal}` ] );
-		arr.push( [ game._week, game.awayTeam, -1 * game._resMatch, game._finished, `${game.awayGoal} - ${game.homeGoal}` ] );
+		arr.push( [ game._week, game.homeTeam, game._resMatch, game._finished, `${game.homeGoal} - ${game.awayGoal}`, game.awayTeam, 'L' ] );
+		arr.push( [ game._week, game.awayTeam, -1 * game._resMatch, game._finished, `${game.awayGoal} - ${game.homeGoal}`, game.homeTeam, 'V' ] );
 	} );
 	Object.keys( obj ).forEach( key => {
 		let row = arr.filter( el => el[ 1 ] == key )[ 0 ];
@@ -171,9 +180,13 @@ function updateObj() {
 			let weekNum = row[ 0 ];
 			let result = row[ 2 ];
 			let score = row[ 4 ];
+			let vs = row[ 5 ];
+			let homeOrAway = row[ 6 ];
 			if ( row[ 3 ] ) {
 				obj[ key ].result[ weekNum - 1 ] = result;
 				obj[ key ].score[ weekNum - 1 ] = score;
+				obj[ key ].vs[ weekNum - 1 ] = vs;
+				obj[ key ].homeOrAway[ weekNum - 1 ] = homeOrAway;
 			}
 		}
 	} );

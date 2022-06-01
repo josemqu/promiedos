@@ -1,5 +1,7 @@
+import Utils from "./utils.js";
+
 export default {
-	arrows( e, arr, sco ) {
+	arrows( e, arr, sco, vs, homeOrAway ) {
 		const div = document.createElement( 'div' );
 		const prevDiv = document.querySelector( 'div.arrows' );
 		div.classList.add( 'arrows' );
@@ -12,12 +14,13 @@ export default {
 			let div = document.createElement( "div" );
 			let image = document.createElement( "img" );
 			let span = document.createElement( 'span' );
+			// image.src = Utils.getLink( `modules/utils/icons/${x}.svg` );
 			image.src = `chrome-extension://ighfojbcgjhekfgpkjojjadnodmlcgpa/modules/utils/icons/${x}.svg`;
 			image.setAttribute( "style", "float:left" );
 			div.classList.add( 'tooltip' );
 			div.classList.add( 'top' );
 			span.classList.add( 'tiptext' );
-			span.innerText = `${sco[i]}`;
+			span.innerText = `${sco[i]} vs ${vs[i]} (${homeOrAway[i]})`;
 			document.querySelector( "div.arrows" ).append( div );
 			div.append( image );
 			div.append( span );

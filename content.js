@@ -48,3 +48,14 @@ function imagesLoad() {
 		( document.head || document.documentElement ).appendChild( elem );
 	} )
 }
+
+chrome.runtime.onMessage.addListener( function( msg, sender, sendResponse ) {
+	console.log( "Filename:", msg.file );
+	const link = chrome.runtime.getURL( msg.file );
+	sendResponse( {
+		response: 'Message received.',
+		link: link
+	} )
+} );
+
+console.log( chrome.runtime.getURL( 'modules/utils/icons/down.svg' ) );

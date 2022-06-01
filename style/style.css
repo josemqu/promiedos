@@ -16,12 +16,12 @@ table#posiciones tbody tr:hover {
 
 .tooltip .tiptext {
     visibility: hidden;
-    width: 60px;
+    min-width: max-content;
     background-color: #962D2C;
     color: #fff;
     text-align: center;
     border-radius: 3px;
-    padding: 6px 0;
+    padding: 6px;
     position: absolute;
     z-index: 1;
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.4);
@@ -36,11 +36,11 @@ table#posiciones tbody tr:hover {
 
 .tooltip:hover .tiptext {
     visibility: visible;
-    font-weight: bold;
+    /* font-weight: bold; */
 }
 
 .tooltip.top .tiptext {
-    margin-left: -30px;
+    transform: translate(-50%);
     bottom: 150%;
     left: 50%;
 }
