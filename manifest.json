@@ -14,13 +14,14 @@
 		],
 		"run_at": "document_end"
 	} ],
-	"permissions": [ "tabs", "storage", "downloads" ],
+	"permissions": [ "storage", "downloads" ],
+	"optional_permissions": [ "unlimitedStorage" ],
 	"web_accessible_resources": [ {
 		"resources": [
 			"app.js",
 			"modules/match.model.js",
 			"modules/team.model.js",
-			"modules/storage.js",
+			"modules/utils/storage.js",
 			"modules/utils/utils.js",
 			"style/style.css",
 			"modules/utils/dom.utils.js",

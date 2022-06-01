@@ -1,6 +1,7 @@
 import Team from './modules/team.model.js'
 import Match from './modules/match.model.js'
 import DomUtils from './modules/utils/dom.utils.js'
+import Storage from './modules/utils/storage.js'
 
 // console.log( 'app.js' );
 console.log( getTableDict() );
@@ -36,13 +37,10 @@ function actions( e ) {
 	e.preventDefault();
 	setTimeout( function() {
 		updateObj();
-		if ( team && globalEvent ) {
-			const res = obj[ team ] ? obj[ team ].result.filter( el => el != null ).slice( -5 ) : obj[ team ].result;
-			const sco = obj[ team ] ? obj[ team ].score.filter( el => el != null ).slice( -5 ) : obj[ team ].score;
-			const vs = obj[ team ] ? obj[ team ].vs.filter( el => el != null ).slice( -5 ) : obj[ team ].vs;
-			const homeOrAway = obj[ team ] ? obj[ team ].homeOrAway.filter( el => el != null ).slice( -5 ) : obj[ team ].homeOrAway;
-			DomUtils.arrows( globalEvent, res, sco, vs, homeOrAway )
-		};
+		if ( team && globalEvent )
+			// Storage.save( obj );
+			// Storage.get( team );
+			showArrows( obj, team, globalEvent );
 	}, 600 );
 }
 
@@ -50,13 +48,17 @@ function actions2( e ) {
 	e.stopPropagation();
 	e.preventDefault();
 	globalEvent = e;
-	team = e.target.parentElement.children[ 1 ].innerText.replace( /\*/g, '' );
-	const res = obj[ team ] ? obj[ team ].result.filter( el => el != null ).slice( -5 ) : obj[ team ].result;
-	const sco = obj[ team ] ? obj[ team ].score.filter( el => el != null ).slice( -5 ) : obj[ team ].score;
-	const vs = obj[ team ] ? obj[ team ].vs.filter( el => el != null ).slice( -5 ) : obj[ team ].vs;
-	const homeOrAway = obj[ team ] ? obj[ team ].homeOrAway.filter( el => el != null ).slice( -5 ) : obj[ team ].homeOrAway;
-	res.length ? DomUtils.arrows( e, res, sco, vs, homeOrAway ) : false;
+	team = globalEvent.target.parentElement.children[ 1 ].innerText.replace( /\*/g, '' ).trim();
+	showArrows( obj, team, globalEvent );
+}
 
+function showArrows( obj, team, event ) {
+	DomUtils.arrows(
+		event,
+		obj[ team ] ? obj[ team ].result.filter( el => el != null ).slice( -5 ) : obj[ team ].result,
+		obj[ team ] ? obj[ team ].score.filter( el => el != null ).slice( -5 ) : obj[ team ].score,
+		obj[ team ] ? obj[ team ].vs.filter( el => el != null ).slice( -5 ) : obj[ team ].vs,
+		obj[ team ] ? obj[ team ].homeOrAway.filter( el => el != null ).slice( -5 ) : obj[ team ].homeOrAway )
 }
 
 function actions3( e ) {
@@ -68,7 +70,7 @@ function actions3( e ) {
 		setTimeout( () => {
 			if ( !( e.clientY > tableDimensions.top && e.clientY < tableDimensions.bottom ) )
 				prevDiv.remove()
-		}, 2000 );
+		}, 1000 );
 	}
 }
 
@@ -91,7 +93,7 @@ function getTeams() {
 	const names = []
 	tables.forEach( table => {
 		const namesColumn = table.querySelectorAll( 'tbody tr td:nth-child(2)' )
-		namesColumn.forEach( el => names.push( el.innerText.replace( /\*/g, '' ) ) );
+		namesColumn.forEach( el => names.push( el.innerText.replace( /\*/g, '' ).trim() ) );
 	} )
 	return names
 }
@@ -192,3 +194,14 @@ function updateObj() {
 	} );
 	return obj
 }
+
+// function some_method( arg_name ) {
+// 	return localStorage.getItem( arg_name );
+// }
+// chrome.runtime.onMessage.addListener( function( request, sender, callback ) {
+// 	if ( request.type == 'localStorage - step 4' ) {
+// 		callback( some_method( request.name ) );
+// 	} else if ( request.type == 'localStorage - step 5' ) {
+// 		localStorage.setItem( request.name, request.value );
+// 	}
+// } );
