@@ -8,20 +8,23 @@
 	},
 	"content_scripts": [ {
 		"js": [ "content.js" ],
+		"type": "module",
 		"css": [ "style/style.css" ],
-		"matches": [
-			"https://www.promiedos.com.ar/*"
-		],
+		"matches": [ "https://www.promiedos.com.ar/*" ],
 		"run_at": "document_end"
 	} ],
+	"background": {
+		"service_worker": "background.js",
+		"type": "module"
+	},
 	"permissions": [ "storage", "downloads" ],
-	"optional_permissions": [ "unlimitedStorage" ],
+	"optional_permissions": [],
 	"web_accessible_resources": [ {
 		"resources": [
 			"app.js",
 			"modules/match.model.js",
 			"modules/team.model.js",
-			"modules/utils/storage.js",
+			"modules/storage.js",
 			"modules/utils/utils.js",
 			"style/style.css",
 			"modules/utils/dom.utils.js",

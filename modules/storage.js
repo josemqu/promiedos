@@ -13,9 +13,9 @@ const successSaveItem = obj => ( {
 
 export default {
 
-	saveItem( item ) {
+	saveItem( itemID, obj ) {
 		return this.save( {
-			[ item.id ]: item
+			[ itemID ]: obj
 		} )
 	},
 
@@ -26,6 +26,7 @@ export default {
 
 	save( obj ) {
 		const local = chrome.storage.local;
+		console.log( obj );
 		return new Promise( ( resolve, reject ) => {
 			local.set( obj, () => {
 				const error = chrome.runtime.lastError;

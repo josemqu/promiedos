@@ -1,54 +1,78 @@
 import Team from './modules/team.model.js'
 import Match from './modules/match.model.js'
 import DomUtils from './modules/utils/dom.utils.js'
-import Storage from './modules/utils/storage.js'
+import Storage from './modules/storage.js'
 
-// console.log( 'app.js' );
+console.log( 'app.js' );
 console.log( getTableDict() );
 console.log( getMatchWeek() );
 let obj = {};
 let team = '';
 let globalEvent;
+let objID = window.location.pathname.replace( /\//g, '' )
 initObj();
-console.log( updateObj( obj ) );
-
+updateObj( obj );
+obj = getObj( objID );
+console.log( obj );
 
 addBtnAction();
 addArrowsListener();
 removeArrowsListener();
 
+function saveObj( obj, objID ) {
+	localStorage.setItem( objID, JSON.stringify( obj ) )
+}
+
+function getObj( objID ) {
+	return JSON.parse( localStorage.getItem( objID ) );
+}
+
 function addBtnAction() {
 	document.querySelectorAll( '#flechaatr, #flechaad, .cfecha, .cfechact, #principal' )
-		.forEach( node => node.addEventListener( 'mousedown', actions, false ) );
+		.forEach( node => node.addEventListener( 'mousedown', mouseDownHandler, false ) );
 }
 
 function addArrowsListener() {
 	document.querySelectorAll( '#posiciones tbody tr' )
-		.forEach( node => node.addEventListener( 'mouseover', actions2, false ) );
+		.forEach( node => node.addEventListener( 'mouseover', mouseOverHandler, false ) );
 }
 
 function removeArrowsListener() {
-	document.querySelectorAll( '#posiciones tbody tr' )
-		.forEach( node => node.addEventListener( 'mouseleave', actions3, false ) );
+	document.querySelectorAll( '#posiciones tbody' )
+		.forEach( node => node.addEventListener( 'mouseleave', mouseLevaeHandler, false ) );
 }
 
-function actions( e ) {
+window.addEventListener( 'scroll', ( event ) => {
+	const prevDiv = document.querySelector( 'div.arrows' );
+	if ( prevDiv ) prevDiv.remove();
+} );
+
+function mouseDownHandler( e ) {
 	e.stopPropagation();
 	e.preventDefault();
 	setTimeout( function() {
 		updateObj();
-		if ( team && globalEvent )
+		saveObj( obj, objID );
+		objID = window.location.pathname.replace( /\//g, '' );
+		if ( team && globalEvent ) {
 			// Storage.save( obj );
 			// Storage.get( team );
+			obj = getObj( objID );
 			showArrows( obj, team, globalEvent );
+		}
 	}, 600 );
 }
 
-function actions2( e ) {
+function mouseOverHandler( e ) {
 	e.stopPropagation();
 	e.preventDefault();
 	globalEvent = e;
-	team = globalEvent.target.parentElement.children[ 1 ].innerText.replace( /\*/g, '' ).trim();
+	if ( e )
+		if ( e.target.parentElement.localName == 'tr' ) {
+			team = e.target.parentElement.children[ 1 ].innerText.replace( /\*/g, '' ).trim();
+		}
+	objID = window.location.pathname.replace( /\//g, '' );
+	obj = getObj( objID );
 	showArrows( obj, team, globalEvent );
 }
 
@@ -61,15 +85,20 @@ function showArrows( obj, team, event ) {
 		obj[ team ] ? obj[ team ].homeOrAway.filter( el => el != null ).slice( -5 ) : obj[ team ].homeOrAway )
 }
 
-function actions3( e ) {
+function mouseLevaeHandler( e ) {
 	e.stopPropagation();
 	e.preventDefault();
 	let tableDimensions = globalEvent.target.parentElement.parentElement.getBoundingClientRect()
 	const prevDiv = document.querySelector( 'div.arrows' );
 	if ( prevDiv ) {
 		setTimeout( () => {
-			if ( !( e.clientY > tableDimensions.top && e.clientY < tableDimensions.bottom ) )
+			if ( !( e.clientY > tableDimensions.top &&
+					e.clientY < tableDimensions.bottom &&
+					e.clientX < tableDimensions.right + 50 &&
+					e.clientX > tableDimensions.left
+				) ) {
 				prevDiv.remove()
+			}
 		}, 1000 );
 	}
 }
@@ -195,13 +224,31 @@ function updateObj() {
 	return obj
 }
 
-// function some_method( arg_name ) {
-// 	return localStorage.getItem( arg_name );
+// const [ itemId ] = window.location.pathname.replace( /\//g, '' )
+// const extensionID = document.querySelector( 'div.chromeExtensionID' ).innerText;
+
+// setTimeout( () => {
+// 	window.chrome.runtime.sendMessage( extensionID, {
+// 		cmd: 'fetch',
+// 		data: {
+// 			itemId,
+// 			obj
+// 		}
+// 	}, ( response ) => {
+// 		if ( response && response.data ) {
+// 			console.log( response );
+// 		}
+// 	} )
+// }, 1500 )
+
+
+// function saveObj( obj ) {
+// 	if ( !obj ) throw `No obj fetched with id ${itemId}`;
+// 	return Storage.saveItem( item )
+// 		.then( () => Graph.show( {
+// 			item,
+// 			elem: $chartSiblin,
+// 			itemId,
+// 			marketId
+// 		} ) )
 // }
-// chrome.runtime.onMessage.addListener( function( request, sender, callback ) {
-// 	if ( request.type == 'localStorage - step 4' ) {
-// 		callback( some_method( request.name ) );
-// 	} else if ( request.type == 'localStorage - step 5' ) {
-// 		localStorage.setItem( request.name, request.value );
-// 	}
-// } );

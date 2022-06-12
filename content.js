@@ -1,8 +1,7 @@
 // console.log( 'content.js' );
-
 const scriptNames = [
 	"app.js",
-	"modules/utils/storage.js",
+	// "modules/storage.js",
 ]
 
 const styleNames = [
@@ -14,6 +13,12 @@ const imageNames = [
 	"modules/utils/icons/equal.svg",
 	"modules/utils/icons/down.svg"
 ]
+
+const div = document.createElement( 'div' );
+div.innerText = chrome.runtime.id;
+div.classList.add( "chromeExtensionID" );
+div.style.display = 'none';
+( document.body || document.documentElement ).appendChild( div );
 
 setTimeout( scriptsLoad, 1000 );
 setTimeout( stylesLoad, 1000 );
@@ -51,27 +56,22 @@ function imagesLoad() {
 	} )
 }
 
-chrome.runtime.onMessage.addListener( function( msg, sender, sendResponse ) {
-	console.log( "Filename:", msg.file );
-	sendResponse( {
-		response: 'Message received.',
-		link: chrome.runtime.getURL( msg.file )
-	} )
-} );
+// chrome.runtime.onMessage.addListener( function( msg, sender, sendResponse ) {
+// 	console.log( "Filename:", msg.file );
+// 	sendResponse( {
+// 		response: 'Message received.',
+// 		link: chrome.runtime.getURL( msg.file )
+// 	} )
+// } );
 
 // chrome.runtime.sendMessage( {
-// 	type: 'localStorage - step 4',
-// 	name: 'preference'
-// }, function( value ) {
-// 	if ( value === null ) {
-// 		// Example: If no preference is set, set one:
-// 		chrome.runtime.sendMessage( {
-// 			type: 'localStorage - step 5',
-// 			name: 'preference',
-// 			value: 'default'
-// 		} );
-// 	}
+// 	id: chrome.runtime.id
+// }, function( response ) {
+// 	console.log( response );
 // } );
+
+
+// div.parentNode.removeChild( div );
 
 // export default {
 // 	getExtensionID() {
