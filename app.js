@@ -58,7 +58,8 @@ function mouseDownHandler( e ) {
 			// Storage.save( obj );
 			// Storage.get( team );
 			obj = getObj( objID );
-			showArrows( obj, team, globalEvent );
+			if ( obj )
+				showArrows( obj, team, globalEvent );
 		}
 	}, 600 );
 }
@@ -73,7 +74,8 @@ function mouseOverHandler( e ) {
 		}
 	objID = window.location.pathname.replace( /\//g, '' );
 	obj = getObj( objID );
-	showArrows( obj, team, globalEvent );
+	if ( obj )
+		showArrows( obj, team, globalEvent );
 }
 
 function showArrows( obj, team, event ) {
