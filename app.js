@@ -166,7 +166,9 @@ function getMatchWeek() {
 }
 
 function getMatchWeekNumber() {
-	return document.getElementById( 'fechmedio' ).innerText.split( '\n' )[ 0 ].split( " " )[ 1 ];
+	const weekNumberElement = document.getElementById( 'fechmedio' );
+	if ( weekNumberElement )
+		return weekNumberElement.innerText.split( '\n' )[ 0 ].split( " " )[ 1 ];
 }
 
 function fetch( num ) {
@@ -205,22 +207,24 @@ function updateObj() {
 		arr.push( [ game._week, game.homeTeam, game._resMatch, game._finished, `${game.homeGoal} - ${game.awayGoal}`, game.awayTeam, 'L' ] );
 		arr.push( [ game._week, game.awayTeam, -1 * game._resMatch, game._finished, `${game.awayGoal} - ${game.homeGoal}`, game.homeTeam, 'V' ] );
 	} );
-	Object.keys( obj ).forEach( key => {
-		let row = arr.filter( el => el[ 1 ] == key )[ 0 ];
-		if ( row ) {
-			let weekNum = row[ 0 ];
-			let result = row[ 2 ];
-			let score = row[ 4 ];
-			let vs = row[ 5 ];
-			let homeOrAway = row[ 6 ];
-			if ( row[ 3 ] ) {
-				obj[ key ].result[ weekNum - 1 ] = result;
-				obj[ key ].score[ weekNum - 1 ] = score;
-				obj[ key ].vs[ weekNum - 1 ] = vs;
-				obj[ key ].homeOrAway[ weekNum - 1 ] = homeOrAway;
+	if ( obj ) {
+		Object.keys( obj ).forEach( key => {
+			let row = arr.filter( el => el[ 1 ] == key )[ 0 ];
+			if ( row ) {
+				let weekNum = row[ 0 ];
+				let result = row[ 2 ];
+				let score = row[ 4 ];
+				let vs = row[ 5 ];
+				let homeOrAway = row[ 6 ];
+				if ( row[ 3 ] ) {
+					obj[ key ].result[ weekNum - 1 ] = result;
+					obj[ key ].score[ weekNum - 1 ] = score;
+					obj[ key ].vs[ weekNum - 1 ] = vs;
+					obj[ key ].homeOrAway[ weekNum - 1 ] = homeOrAway;
+				}
 			}
-		}
-	} );
+		} );
+	}
 	return obj
 }
 
