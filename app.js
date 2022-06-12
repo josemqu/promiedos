@@ -15,10 +15,6 @@ updateObj( obj );
 obj = getObj( objID );
 console.log( obj );
 
-addBtnAction();
-addArrowsListener();
-removeArrowsListener();
-
 function saveObj( obj, objID ) {
 	localStorage.setItem( objID, JSON.stringify( obj ) )
 }
@@ -27,20 +23,14 @@ function getObj( objID ) {
 	return JSON.parse( localStorage.getItem( objID ) );
 }
 
-function addBtnAction() {
-	document.querySelectorAll( '#flechaatr, #flechaad, .cfecha, .cfechact, #principal' )
-		.forEach( node => node.addEventListener( 'mousedown', mouseDownHandler, false ) );
-}
+document.querySelectorAll( '#flechaatr, #flechaad, .cfecha, .cfechact, #principal' )
+	.forEach( node => node.addEventListener( 'mousedown', mouseDownHandler, false ) );
 
-function addArrowsListener() {
-	document.querySelectorAll( '#posiciones tbody tr' )
-		.forEach( node => node.addEventListener( 'mouseover', mouseOverHandler, false ) );
-}
+document.querySelectorAll( '#posiciones tbody tr' )
+	.forEach( node => node.addEventListener( 'mouseover', mouseOverHandler, false ) );
 
-function removeArrowsListener() {
-	document.querySelectorAll( '#posiciones tbody' )
-		.forEach( node => node.addEventListener( 'mouseleave', mouseLevaeHandler, false ) );
-}
+document.querySelectorAll( '#posiciones tbody' )
+	.forEach( node => node.addEventListener( 'mouseleave', mouseLevaeHandler, false ) );
 
 window.addEventListener( 'scroll', ( event ) => {
 	const prevDiv = document.querySelector( 'div.arrows' );
