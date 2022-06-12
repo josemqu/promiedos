@@ -1,7 +1,7 @@
 import Utils from "./utils.js";
 
 export default {
-	arrows( e, arr, sco, vs, homeOrAway ) {
+	arrows( element, arr, sco, vs, homeOrAway ) {
 		const div = document.createElement( 'div' );
 		const prevDiv = document.querySelector( 'div.arrows' );
 		if ( arr ) {
@@ -38,13 +38,12 @@ export default {
 			div.style.backgroundColor = 'rgb(49, 45, 44, 1)';
 			div.style.border = '1px solid #FFFFFF';
 			div.style.borderRadius = '3px';
-			if ( e.target.parentElement.localName == 'tr' ) {
-				const messures = e.target.parentElement.children[ 1 ].parentElement.getBoundingClientRect()
-				let x = messures.x + messures.width + 10
-				let y = messures.y - 2
-				div.style.left = `${x}px`;
-				div.style.top = `${y}px`;
-			}
+
+			const messures = element.children[ 1 ].parentElement.getBoundingClientRect()
+			let x = messures.x + messures.width + 10
+			let y = messures.y - 2
+			div.style.left = `${x}px`;
+			div.style.top = `${y}px`;
 		}
 	}
 }

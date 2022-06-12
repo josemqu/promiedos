@@ -32,14 +32,12 @@ document.querySelectorAll( '#posiciones tbody tr' )
 document.querySelectorAll( '#posiciones tbody' )
 	.forEach( node => node.addEventListener( 'mouseleave', mouseLevaeHandler, false ) );
 
-window.addEventListener( 'scroll', ( event ) => {
-	const prevDiv = document.querySelector( 'div.arrows' );
-	if ( prevDiv ) prevDiv.remove();
-} );
+window.addEventListener( 'scroll', scrollHandler, false );
 
 function mouseDownHandler( e ) {
 	e.stopPropagation();
 	e.preventDefault();
+	let element = e.target.parentElement.localName == 'tr' ? e.target.parentElement : e.target.parentElement.parentElement;
 	setTimeout( function() {
 		updateObj();
 		saveObj( obj, objID );
@@ -49,7 +47,7 @@ function mouseDownHandler( e ) {
 			// Storage.get( team );
 			obj = getObj( objID );
 			if ( obj )
-				showArrows( obj, team, globalEvent );
+				showArrows( obj, team, element );
 		}
 	}, 600 );
 }
@@ -58,19 +56,21 @@ function mouseOverHandler( e ) {
 	e.stopPropagation();
 	e.preventDefault();
 	globalEvent = e;
-	if ( e )
+	let element = e.target.parentElement.localName == 'tr' ? e.target.parentElement : e.target.parentElement.parentElement;
+	if ( e ) {
 		if ( e.target.parentElement.localName == 'tr' ) {
 			team = e.target.parentElement.children[ 1 ].innerText.replace( /\*/g, '' ).trim();
+			objID = window.location.pathname.replace( /\//g, '' );
+			obj = getObj( objID );
+			if ( obj )
+				showArrows( obj, team, element );
 		}
-	objID = window.location.pathname.replace( /\//g, '' );
-	obj = getObj( objID );
-	if ( obj )
-		showArrows( obj, team, globalEvent );
+	}
 }
 
-function showArrows( obj, team, event ) {
+function showArrows( obj, team, element ) {
 	DomUtils.arrows(
-		event,
+		element,
 		obj[ team ] ? obj[ team ].result.filter( el => el != null ).slice( -5 ) : obj[ team ].result,
 		obj[ team ] ? obj[ team ].score.filter( el => el != null ).slice( -5 ) : obj[ team ].score,
 		obj[ team ] ? obj[ team ].vs.filter( el => el != null ).slice( -5 ) : obj[ team ].vs,
@@ -93,6 +93,11 @@ function mouseLevaeHandler( e ) {
 			}
 		}, 1000 );
 	}
+}
+
+function scrollHandler( e ) {
+	const prevDiv = document.querySelector( 'div.arrows' );
+	if ( prevDiv ) prevDiv.remove();
 }
 
 function getTeam( name ) {
