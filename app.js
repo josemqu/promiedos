@@ -190,7 +190,7 @@ async function showTable( competition ) {
 	const div = document.createElement( 'div' );
 	div.classList.add( 'tabPos' );
 	div.innerHTML = await getPositionTable( competition );
-	div.style.position = 'static';
+	div.style.position = 'fixed';
 	// div.style.left = '1300px';
 	div.style.left = getRightMargin() + 'px';
 	document.body.appendChild( div );
