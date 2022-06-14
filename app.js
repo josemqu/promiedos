@@ -9,11 +9,16 @@ console.log( getMatchWeek() );
 let obj = {};
 let team = '';
 let globalEvent;
+let tableName = "";
+let previousTableName = "";
 let objID = window.location.pathname.replace( /\//g, '' )
 initObj();
 obj = getObj( objID ) || initObj();
 updateObj( obj );
 saveObj( obj, objID );
+mouseOver();
+mouseLeave();
+mouseDown();
 console.log( obj );
 
 function saveObj( obj, objID ) {
@@ -26,14 +31,20 @@ function getObj( objID ) {
 	return JSON.parse( localStorage.getItem( objID ) );
 }
 
-document.querySelectorAll( '#flechaatr, #flechaad, .cfecha, .cfechact, #principal' )
-	.forEach( node => node.addEventListener( 'mousedown', mouseDownHandler, false ) );
+function mouseDown() {
+	document.querySelectorAll( '#flechaatr, #flechaad, .cfecha, .cfechact, #principal' )
+		.forEach( node => node.addEventListener( 'mousedown', mouseDownHandler, false ) );
+}
 
-document.querySelectorAll( '#posiciones tbody tr' )
-	.forEach( node => node.addEventListener( 'mouseover', mouseOverHandler, false ) );
+function mouseOver() {
+	document.querySelectorAll( '#posiciones tbody tr' )
+		.forEach( node => node.addEventListener( 'mouseover', mouseOverHandler, false ) );
+}
 
-document.querySelectorAll( '#posiciones tbody' )
-	.forEach( node => node.addEventListener( 'mouseleave', mouseLevaeHandler, false ) );
+function mouseLeave() {
+	document.querySelectorAll( '#posiciones tbody' )
+		.forEach( node => node.addEventListener( 'mouseleave', mouseLevaeHandler, false ) );
+}
 
 window.addEventListener( 'scroll', scrollHandler, false );
 
@@ -64,7 +75,7 @@ function mouseOverHandler( e ) {
 	if ( e ) {
 		if ( e.target.parentElement.localName == 'tr' ) {
 			team = e.target.parentElement.children[ 1 ].innerText.replace( /\*/g, '' ).trim();
-			objID = window.location.pathname.replace( /\//g, '' );
+			objID = objID || window.location.pathname.replace( /\//g, '' );
 			obj = getObj( objID );
 			if ( obj )
 				showArrows( obj, team, element );
@@ -172,20 +183,20 @@ function getMatchWeekNumber() {
 		return weekNumberElement.innerText.split( '\n' )[ 0 ].split( " " )[ 1 ];
 }
 
-await showTable( 'primera' )
-
 async function showTable( competition ) {
 	const tabPos = document.querySelector( '.tabPos' );
-	tabPos ? tabPos.remove() : false;
+	if ( tabPos )
+		tabPos.remove();
 	const div = document.createElement( 'div' );
 	div.classList.add( 'tabPos' );
-	div.innerHTML = await getPosTable( competition );
-	div.style.position = 'fixed';
-	div.style.left = '1300px';
+	div.innerHTML = await getPositionTable( competition );
+	div.style.position = 'static';
+	// div.style.left = '1300px';
+	div.style.left = getRightMargin() + 'px';
 	document.body.appendChild( div );
 }
 
-async function getPosTable( competition ) {
+async function getPositionTable( competition ) {
 	try {
 		let response = await fetch( `https://www.promiedos.com.ar/${competition}` );
 		let html = await response.text();
@@ -198,24 +209,10 @@ async function getPosTable( competition ) {
 	}
 }
 
-function getPositionsTable( competition ) {
-	fetch( `https://www.promiedos.com.ar/${competition}` ).then( function( response ) {
-		// The API call was successful!
-		return response.text();
-	} ).then( function( html ) {
-
-		// Convert the HTML string into a document object
-		var parser = new DOMParser();
-		var doc = parser.parseFromString( html, 'text/html' );
-
-		// Get table innerHTML
-		let table = doc.querySelector( "#posiciones" ).innerHTML;
-		return table;
-
-	} ).catch( function( err ) {
-		// There was an error
-		console.warn( 'Something went wrong.', err );
-	} );
+function getRightMargin() {
+	const element = document.querySelector( "tr.tituloin > td > a" )
+	const messures = element.children[ 1 ].parentElement.getBoundingClientRect();
+	return messures.right + 50
 }
 
 function initObj() {
@@ -254,4 +251,25 @@ function updateObj() {
 		} );
 	}
 	return obj
+}
+
+document.querySelectorAll( '.tituloin' )
+	.forEach( node => node.addEventListener( 'mouseover', tituloHandler, false ) )
+
+function tituloHandler( e ) {
+	e.preventDefault();
+	e.stopPropagation();
+	let element = e.target;
+	if ( element.localName === 'a' ) {
+		tableName = element.href.split( "/" )[ 3 ];
+		if ( tableName !== previousTableName ) {
+			showTable( tableName );
+			setTimeout( () => {
+				mouseOver();
+				mouseLeave();
+				objID = tableName;
+			}, 1000 );
+			previousTableName = tableName;
+		}
+	}
 }
