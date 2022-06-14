@@ -1,6 +1,6 @@
 // console.log( 'content.js' );
 const scriptNames = [
-	"app.js",
+	"app.js"
 	// "modules/storage.js",
 ]
 

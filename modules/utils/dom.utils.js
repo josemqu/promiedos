@@ -39,7 +39,7 @@ export default {
 			div.style.border = '1px solid #FFFFFF';
 			div.style.borderRadius = '3px';
 
-			const messures = element.children[ 1 ].parentElement.getBoundingClientRect()
+			const messures = element.children[ 1 ].parentElement.getBoundingClientRect();
 			let x = messures.x + messures.width + 10
 			let y = messures.y - 2
 			div.style.left = `${x}px`;

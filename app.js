@@ -11,12 +11,15 @@ let team = '';
 let globalEvent;
 let objID = window.location.pathname.replace( /\//g, '' )
 initObj();
+obj = getObj( objID ) || initObj();
 updateObj( obj );
-obj = getObj( objID );
+saveObj( obj, objID );
 console.log( obj );
 
 function saveObj( obj, objID ) {
-	localStorage.setItem( objID, JSON.stringify( obj ) )
+	if ( Object.keys( obj ).length ) {
+		localStorage.setItem( objID, JSON.stringify( obj ) )
+	}
 }
 
 function getObj( objID ) {
@@ -37,17 +40,18 @@ window.addEventListener( 'scroll', scrollHandler, false );
 function mouseDownHandler( e ) {
 	e.stopPropagation();
 	e.preventDefault();
-	let element = e.target.parentElement.localName == 'tr' ? e.target.parentElement : e.target.parentElement.parentElement;
+	let element = globalEvent.target.parentElement.localName == 'tr' ? globalEvent.target.parentElement : globalEvent.target.parentElement.parentElement;
 	setTimeout( function() {
 		updateObj();
 		saveObj( obj, objID );
 		objID = window.location.pathname.replace( /\//g, '' );
-		if ( team && globalEvent ) {
+		if ( team && element ) {
 			// Storage.save( obj );
 			// Storage.get( team );
 			obj = getObj( objID );
-			if ( obj )
+			if ( obj ) {
 				showArrows( obj, team, element );
+			}
 		}
 	}, 600 );
 }
@@ -56,7 +60,7 @@ function mouseOverHandler( e ) {
 	e.stopPropagation();
 	e.preventDefault();
 	globalEvent = e;
-	let element = e.target.parentElement.localName == 'tr' ? e.target.parentElement : e.target.parentElement.parentElement;
+	let element = globalEvent.target.parentElement.localName == 'tr' ? e.target.parentElement : e.target.parentElement.parentElement;
 	if ( e ) {
 		if ( e.target.parentElement.localName == 'tr' ) {
 			team = e.target.parentElement.children[ 1 ].innerText.replace( /\*/g, '' ).trim();
@@ -121,7 +125,7 @@ function getTeams() {
 		const namesColumn = table.querySelectorAll( 'tbody tr td:nth-child(2)' )
 		namesColumn.forEach( el => names.push( el.innerText.replace( /\*/g, '' ).trim() ) );
 	} )
-	return names
+	return [ ...new Set( names ) ]
 }
 
 function getRow( name ) {
@@ -168,8 +172,34 @@ function getMatchWeekNumber() {
 		return weekNumberElement.innerText.split( '\n' )[ 0 ].split( " " )[ 1 ];
 }
 
-function fetch( num ) {
-	fetch( `https://www.promiedos.com.ar/club=${num}` ).then( function( response ) {
+await showTable( 'primera' )
+
+async function showTable( competition ) {
+	const tabPos = document.querySelector( '.tabPos' );
+	tabPos ? tabPos.remove() : false;
+	const div = document.createElement( 'div' );
+	div.classList.add( 'tabPos' );
+	div.innerHTML = await getPosTable( competition );
+	div.style.position = 'fixed';
+	div.style.left = '1300px';
+	document.body.appendChild( div );
+}
+
+async function getPosTable( competition ) {
+	try {
+		let response = await fetch( `https://www.promiedos.com.ar/${competition}` );
+		let html = await response.text();
+		let parser = new DOMParser();
+		let doc = parser.parseFromString( html, 'text/html' );
+		let table = doc.querySelector( "#posiciones" ).parentElement.innerHTML;
+		return table
+	} catch ( err ) {
+		console.warn( err );
+	}
+}
+
+function getPositionsTable( competition ) {
+	fetch( `https://www.promiedos.com.ar/${competition}` ).then( function( response ) {
 		// The API call was successful!
 		return response.text();
 	} ).then( function( html ) {
@@ -178,9 +208,9 @@ function fetch( num ) {
 		var parser = new DOMParser();
 		var doc = parser.parseFromString( html, 'text/html' );
 
-		// Get the image file
-		var club = doc.querySelector( '.clubder' ).textContent.split( 'Nombre completo' )[ 0 ];
-		console.log( club );
+		// Get table innerHTML
+		let table = doc.querySelector( "#posiciones" ).innerHTML;
+		return table;
 
 	} ).catch( function( err ) {
 		// There was an error
@@ -195,6 +225,7 @@ function initObj() {
 		vs: [],
 		homeOrAway: []
 	} );
+	return obj
 }
 
 function updateObj() {
@@ -224,32 +255,3 @@ function updateObj() {
 	}
 	return obj
 }
-
-// const [ itemId ] = window.location.pathname.replace( /\//g, '' )
-// const extensionID = document.querySelector( 'div.chromeExtensionID' ).innerText;
-
-// setTimeout( () => {
-// 	window.chrome.runtime.sendMessage( extensionID, {
-// 		cmd: 'fetch',
-// 		data: {
-// 			itemId,
-// 			obj
-// 		}
-// 	}, ( response ) => {
-// 		if ( response && response.data ) {
-// 			console.log( response );
-// 		}
-// 	} )
-// }, 1500 )
-
-
-// function saveObj( obj ) {
-// 	if ( !obj ) throw `No obj fetched with id ${itemId}`;
-// 	return Storage.saveItem( item )
-// 		.then( () => Graph.show( {
-// 			item,
-// 			elem: $chartSiblin,
-// 			itemId,
-// 			marketId
-// 		} ) )
-// }
