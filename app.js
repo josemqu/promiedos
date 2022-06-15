@@ -23,6 +23,7 @@ console.log( obj );
 
 function saveObj( obj, objID ) {
 	if ( Object.keys( obj ).length ) {
+		console.log( 'save', obj );
 		localStorage.setItem( objID, JSON.stringify( obj ) )
 	}
 }
@@ -54,8 +55,10 @@ function mouseDownHandler( e ) {
 	let element = globalEvent.target.parentElement.localName == 'tr' ? globalEvent.target.parentElement : globalEvent.target.parentElement.parentElement;
 	setTimeout( function() {
 		updateObj();
-		saveObj( obj, objID );
-		objID = window.location.pathname.replace( /\//g, '' );
+		if ( window.location.pathname.replace( /\//g, '' ) ) {
+			objID = window.location.pathname.replace( /\//g, '' );
+			saveObj( obj, objID );
+		}
 		if ( team && element ) {
 			// Storage.save( obj );
 			// Storage.get( team );
@@ -77,8 +80,10 @@ function mouseOverHandler( e ) {
 			team = e.target.parentElement.children[ 1 ].innerText.replace( /\*/g, '' ).trim();
 			objID = objID || window.location.pathname.replace( /\//g, '' );
 			obj = getObj( objID );
-			if ( obj )
+			if ( obj ) {
+				console.log( objID );
 				showArrows( obj, team, element );
+			}
 		}
 	}
 }
@@ -104,7 +109,7 @@ function mouseLevaeHandler( e ) {
 					e.clientX < tableDimensions.right + 50 &&
 					e.clientX > tableDimensions.left
 				) ) {
-				prevDiv.remove()
+				prevDiv.remove();
 			}
 		}, 1000 );
 	}
@@ -184,15 +189,16 @@ function getMatchWeekNumber() {
 }
 
 async function showTable( competition ) {
-	const tabPos = document.querySelector( '.tabPos' );
-	if ( tabPos )
-		tabPos.remove();
+	const tabPos = document.querySelectorAll( '.tabPos' );
+	if ( tabPos[ 0 ] )
+		tabPos.forEach( el => el.remove() );
 	const div = document.createElement( 'div' );
 	div.classList.add( 'tabPos' );
 	div.innerHTML = await getPositionTable( competition );
 	div.style.position = 'fixed';
-	// div.style.left = '1300px';
+	div.style.width = '380px';
 	div.style.left = getRightMargin() + 'px';
+	div.style.top = 20 + 'px';
 	document.body.appendChild( div );
 }
 
@@ -212,7 +218,7 @@ async function getPositionTable( competition ) {
 function getRightMargin() {
 	const element = document.querySelector( "tr.tituloin > td > a" )
 	const messures = element.children[ 1 ].parentElement.getBoundingClientRect();
-	return messures.right + 50
+	return messures.right + ( window.innerWidth - messures.right - 380 ) / 4
 }
 
 function initObj() {
