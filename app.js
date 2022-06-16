@@ -6,6 +6,7 @@ import Storage from './modules/storage.js'
 console.log( 'app.js' );
 console.log( getTableDict() );
 console.log( getMatchWeek() );
+console.log( getGroupWeek() );
 let obj = {};
 let team = '';
 let globalEvent;
@@ -232,28 +233,32 @@ function initObj() {
 }
 
 function updateObj() {
-	const week = getMatchWeek();
+	const week = getGroupWeek(); //asignar el array no vacío   getMatchWeek() || getGroupWeek()
+	console.log( week );
 	const arr = [];
 	week.forEach( game => {
 		arr.push( [ game._week, game.homeTeam, game._resMatch, game._finished, `${game.homeGoal} - ${game.awayGoal}`, game.awayTeam, 'L' ] );
 		arr.push( [ game._week, game.awayTeam, -1 * game._resMatch, game._finished, `${game.awayGoal} - ${game.homeGoal}`, game.homeTeam, 'V' ] );
 	} );
+	console.log( arr );
 	if ( obj ) {
 		Object.keys( obj ).forEach( key => {
-			let row = arr.filter( el => el[ 1 ] == key )[ 0 ];
-			if ( row ) {
-				let weekNum = row[ 0 ];
-				let result = row[ 2 ];
-				let score = row[ 4 ];
-				let vs = row[ 5 ];
-				let homeOrAway = row[ 6 ];
-				if ( row[ 3 ] ) {
-					obj[ key ].result[ weekNum - 1 ] = result;
-					obj[ key ].score[ weekNum - 1 ] = score;
-					obj[ key ].vs[ weekNum - 1 ] = vs;
-					obj[ key ].homeOrAway[ weekNum - 1 ] = homeOrAway;
+			let matches = arr.filter( el => el[ 1 ] == key );
+			matches.forEach( match => {
+				if ( match ) {
+					let weekNum = match[ 0 ];
+					let result = match[ 2 ];
+					let score = match[ 4 ];
+					let vs = match[ 5 ];
+					let homeOrAway = match[ 6 ];
+					if ( match[ 3 ] ) {
+						obj[ key ].result[ weekNum - 1 ] = result;
+						obj[ key ].score[ weekNum - 1 ] = score;
+						obj[ key ].vs[ weekNum - 1 ] = vs;
+						obj[ key ].homeOrAway[ weekNum - 1 ] = homeOrAway;
+					}
 				}
-			}
+			} );
 		} );
 	}
 	return obj
@@ -278,4 +283,51 @@ function tituloHandler( e ) {
 			previousTableName = tableName;
 		}
 	}
+}
+
+function getGroupWeek() {
+	const fechas = document.querySelectorAll( "#fixgrupo" );
+	let arr = [];
+	const dict = setDict();
+	console.log( dict );
+	fechas.forEach( fecha => {
+		let num = fecha.children[ 0 ].innerText.split( " " )[ 1 ];
+		let matches = fecha.querySelectorAll( '.grtr' );
+		matches.forEach( match => {
+			arr.push(
+				new Match( [
+					num,
+					dict[ match.children[ 0 ].children[ 0 ].src.replace( /^.*[\\\/]/, '' ).split( "." )[ 0 ] ], //match.children[ 0 ].children[ 0 ].src.replace( /^.*[\\\/]/, '' ).split( "." )[ 0 ]
+					match.children[ 1 ].innerText.split( "-" )[ 0 ],
+					match.children[ 1 ].innerText.split( "-" )[ 1 ],
+					dict[ match.children[ 2 ].children[ 0 ].src.replace( /^.*[\\\/]/, '' ).split( "." )[ 0 ] ],
+					match.children[ 1 ].innerText.split( "-" )[ 0 ] ? true : false
+				] )
+			);
+		} );
+	} );
+	return arr;
+}
+
+function teamDict() {
+	const teams = getTeams();
+	const dict = {};
+	teams.forEach( team => {
+		let teamName = team.replace( /\W|Dep/g, '' );
+		return dict[ teamName.slice( 0, 3 ).toUpperCase() ] = team
+	} );
+	return dict;
+}
+
+function setDict() {
+	const dict = {};
+	const rows = document.querySelectorAll( "#posiciones > tbody > tr" );
+	rows.forEach( row => {
+		let team = row.children[ 1 ].innerText;
+		let imgs = row.querySelectorAll( 'img' );
+		let code = imgs[ imgs.length - 1 ].src.replace( /^.*[\\\/]/, '' ).split( "." )[ 0 ];
+		console.log( code, team );
+		return dict[ code ] = team;
+	} );
+	return dict;
 }
