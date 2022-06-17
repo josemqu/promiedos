@@ -5,8 +5,6 @@ import Storage from './modules/storage.js'
 
 console.log( 'app.js' );
 console.log( getTableDict() );
-console.log( getMatchWeek() );
-console.log( getGroupWeek() );
 let obj = {};
 let team = '';
 let globalEvent;
@@ -20,7 +18,6 @@ saveObj( obj, objID );
 mouseOver();
 mouseLeave();
 mouseDown();
-console.log( obj );
 
 function saveObj( obj, objID ) {
 	if ( Object.keys( obj ).length ) {
@@ -82,7 +79,6 @@ function mouseOverHandler( e ) {
 			objID = objID || window.location.pathname.replace( /\//g, '' );
 			obj = getObj( objID );
 			if ( obj ) {
-				console.log( objID );
 				showArrows( obj, team, element );
 			}
 		}
@@ -233,14 +229,12 @@ function initObj() {
 }
 
 function updateObj() {
-	const week = getGroupWeek(); //asignar el array no vacío   getMatchWeek() || getGroupWeek()
-	console.log( week );
+	const week = isEmpty( getGroupWeek() ) ? getMatchWeek() : getGroupWeek() //asignar el array no vacío   getMatchWeek() || getGroupWeek()
 	const arr = [];
 	week.forEach( game => {
 		arr.push( [ game._week, game.homeTeam, game._resMatch, game._finished, `${game.homeGoal} - ${game.awayGoal}`, game.awayTeam, 'L' ] );
 		arr.push( [ game._week, game.awayTeam, -1 * game._resMatch, game._finished, `${game.awayGoal} - ${game.homeGoal}`, game.homeTeam, 'V' ] );
 	} );
-	console.log( arr );
 	if ( obj ) {
 		Object.keys( obj ).forEach( key => {
 			let matches = arr.filter( el => el[ 1 ] == key );
@@ -289,7 +283,7 @@ function getGroupWeek() {
 	const fechas = document.querySelectorAll( "#fixgrupo" );
 	let arr = [];
 	const dict = setDict();
-	console.log( dict );
+	// const dict = getTableDict();
 	fechas.forEach( fecha => {
 		let num = fecha.children[ 0 ].innerText.split( " " )[ 1 ];
 		let matches = fecha.querySelectorAll( '.grtr' );
@@ -297,10 +291,10 @@ function getGroupWeek() {
 			arr.push(
 				new Match( [
 					num,
-					dict[ match.children[ 0 ].children[ 0 ].src.replace( /^.*[\\\/]/, '' ).split( "." )[ 0 ] ], //match.children[ 0 ].children[ 0 ].src.replace( /^.*[\\\/]/, '' ).split( "." )[ 0 ]
+					dict[ match.children[ 0 ].lastElementChild.src.replace( /^.*[\\\/]/, '' ).split( "." )[ 0 ] ], //match.children[ 0 ].children[ 0 ].src.replace( /^.*[\\\/]/, '' ).split( "." )[ 0 ]
 					match.children[ 1 ].innerText.split( "-" )[ 0 ],
 					match.children[ 1 ].innerText.split( "-" )[ 1 ],
-					dict[ match.children[ 2 ].children[ 0 ].src.replace( /^.*[\\\/]/, '' ).split( "." )[ 0 ] ],
+					dict[ match.children[ 2 ].lastElementChild.src.replace( /^.*[\\\/]/, '' ).split( "." )[ 0 ] ],
 					match.children[ 1 ].innerText.split( "-" )[ 0 ] ? true : false
 				] )
 			);
@@ -323,11 +317,15 @@ function setDict() {
 	const dict = {};
 	const rows = document.querySelectorAll( "#posiciones > tbody > tr" );
 	rows.forEach( row => {
-		let team = row.children[ 1 ].innerText;
+		let team = row.children[ 1 ].innerText.replace( /^\s/g, '' );
 		let imgs = row.querySelectorAll( 'img' );
 		let code = imgs[ imgs.length - 1 ].src.replace( /^.*[\\\/]/, '' ).split( "." )[ 0 ];
-		console.log( code, team );
 		return dict[ code ] = team;
 	} );
 	return dict;
+}
+
+// function that chek if an array is empty
+function isEmpty( arr ) {
+	return arr.length === 0;
 }
