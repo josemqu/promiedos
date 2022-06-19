@@ -21,7 +21,7 @@ mouseDown();
 
 function saveObj( obj, objID ) {
 	if ( Object.keys( obj ).length ) {
-		console.log( 'save', obj );
+		console.log( 'save', objID, obj );
 		localStorage.setItem( objID, JSON.stringify( obj ) )
 	}
 }
@@ -69,8 +69,8 @@ function mouseDownHandler( e ) {
 }
 
 function mouseOverHandler( e ) {
-	e.stopPropagation();
 	e.preventDefault();
+	e.stopPropagation();
 	globalEvent = e;
 	let element = globalEvent.target.parentElement.localName == 'tr' ? e.target.parentElement : e.target.parentElement.parentElement;
 	if ( e ) {
@@ -80,6 +80,7 @@ function mouseOverHandler( e ) {
 			obj = getObj( objID );
 			if ( obj ) {
 				showArrows( obj, team, element );
+				console.log( `${team}: `, getNextRivalsAvg( team ) );
 			}
 		}
 	}
@@ -158,6 +159,16 @@ function getTableDict() {
 		let team = getTeam( name );
 		let key = team.id
 		table[ key ] = team
+	} )
+	return table
+}
+
+function getTable() {
+	const table = {};
+	const teams = getTeams();
+	teams.forEach( team => {
+		let teamData = getTeam( team );
+		table[ team ] = teamData;
 	} )
 	return table
 }
@@ -328,4 +339,23 @@ function setDict() {
 // function that chek if an array is empty
 function isEmpty( arr ) {
 	return arr.length === 0;
+}
+
+function getNextRivals( team ) {
+	const teams = getTeams();
+	const week = getObj( 'primera' );
+	const arr = [ ...week[ team ].vs, team ];
+	const filtered = teams.filter( el => !arr.includes( el ) );
+	return filtered
+}
+
+// get average of pts for the next rivals of a team
+function getNextRivalsAvg( team ) {
+	const nextRivals = getNextRivals( team );
+	const table = getTable();
+	let sum = 0;
+	nextRivals.forEach( rival => {
+		return sum += table[ rival ].pts / table[ rival ].played;
+	} );
+	return Math.round( sum * 100 / nextRivals.length ) / 100
 }
