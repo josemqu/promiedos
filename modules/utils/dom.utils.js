@@ -10,7 +10,6 @@ export default {
 			} else {
 				const extensionID = document.querySelector( 'div.chromeExtensionID' ).innerText;
 				div.classList.add( 'arrows' );
-				div.innerHTML = `<div class="arrows"></div>`;
 				if ( prevDiv ) prevDiv.remove();
 				document.body.appendChild( div );
 
@@ -24,21 +23,13 @@ export default {
 					div.classList.add( 'tooltip' );
 					div.classList.add( 'top' );
 					span.classList.add( 'tiptext' );
-					span.innerText = `${sco[i]} vs ${vs[i]} (${homeOrAway[i]})`;
+					span.innerHTML = `<strong>${sco[i]}</strong> vs ${vs[i]} (${homeOrAway[i]})`;
 					document.querySelector( "div.arrows" ).append( div );
 					div.append( image );
 					div.append( span );
 				} );
-			}
-			div.style.position = 'fixed';
-			div.style.zIndex = '10';
-			div.style.borderRadius = '2px 2px 2px 2px';
-			// div.style.padding = '1px';
-			div.style.color = 'rgb(20, 20, 20, 1)';
-			div.style.backgroundColor = 'rgb(49, 45, 44, 1)';
-			div.style.border = '1px solid #FFFFFF';
-			div.style.borderRadius = '3px';
 
+			}
 			const messures = element.children[ 1 ].parentElement.getBoundingClientRect();
 			let x = messures.x + messures.width + 10
 			let y = messures.y - 2

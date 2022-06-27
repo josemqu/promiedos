@@ -7,7 +7,15 @@ table#posiciones tbody tr:hover {
     display: flex;
     justify-content: center;
     align-items: center;
+    position: fixed;
+    z-index: 10;
+    border-radius: 2px;
+    color: rgb(20, 20, 20, 1);
+    background-color: rgb(49, 45, 44, 1);
+    border: 1.8px solid #797979;
 }
+
+
 
 .tooltip {
     position: relative;
@@ -18,6 +26,8 @@ table#posiciones tbody tr:hover {
     visibility: hidden;
     min-width: max-content;
     background-color: #962D2C;
+    /* #00612D */
+    ;
     color: #fff;
     text-align: center;
     border-radius: 3px;
