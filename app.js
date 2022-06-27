@@ -5,6 +5,7 @@ import Storage from './modules/storage.js'
 
 console.log( 'app.js' );
 console.log( getTableDict() );
+const N_ARROWS = 5;
 let obj = {};
 let team = '';
 let globalEvent;
@@ -89,10 +90,10 @@ function mouseOverHandler( e ) {
 function showArrows( obj, team, element ) {
 	DomUtils.arrows(
 		element,
-		obj[ team ] ? obj[ team ].result.filter( el => el != null ).slice( -5 ) : obj[ team ].result,
-		obj[ team ] ? obj[ team ].score.filter( el => el != null ).slice( -5 ) : obj[ team ].score,
-		obj[ team ] ? obj[ team ].vs.filter( el => el != null ).slice( -5 ) : obj[ team ].vs,
-		obj[ team ] ? obj[ team ].homeOrAway.filter( el => el != null ).slice( -5 ) : obj[ team ].homeOrAway )
+		obj[ team ] ? obj[ team ].result.filter( el => el != null ).slice( -N_ARROWS ) : obj[ team ].result,
+		obj[ team ] ? obj[ team ].score.filter( el => el != null ).slice( -N_ARROWS ) : obj[ team ].score,
+		obj[ team ] ? obj[ team ].vs.filter( el => el != null ).slice( -N_ARROWS ) : obj[ team ].vs,
+		obj[ team ] ? obj[ team ].homeOrAway.filter( el => el != null ).slice( -N_ARROWS ) : obj[ team ].homeOrAway )
 }
 
 function mouseLevaeHandler( e ) {
@@ -198,15 +199,15 @@ function getMatchWeekNumber() {
 
 async function showTable( competition ) {
 	const tabPos = document.querySelectorAll( '.tabPos' );
-	if ( tabPos[ 0 ] )
+	if ( !isEmpty( tabPos ) )
 		tabPos.forEach( el => el.remove() );
 	const div = document.createElement( 'div' );
 	div.classList.add( 'tabPos' );
 	div.innerHTML = await getPositionTable( competition );
-	div.style.position = 'fixed';
+	div.style.position = 'absolute';
 	div.style.width = '380px';
 	div.style.left = getRightMargin() + 'px';
-	div.style.top = 20 + 'px';
+	div.style.top = -document.body.getBoundingClientRect().top + 20 + 'px';
 	document.body.appendChild( div );
 }
 
@@ -302,7 +303,7 @@ function getGroupWeek() {
 			arr.push(
 				new Match( [
 					num,
-					dict[ match.children[ 0 ].lastElementChild.src.replace( /^.*[\\\/]/, '' ).split( "." )[ 0 ] ], //match.children[ 0 ].children[ 0 ].src.replace( /^.*[\\\/]/, '' ).split( "." )[ 0 ]
+					dict[ match.children[ 0 ].lastElementChild.src.replace( /^.*[\\\/]/, '' ).split( "." )[ 0 ] ],
 					match.children[ 1 ].innerText.split( "-" )[ 0 ],
 					match.children[ 1 ].innerText.split( "-" )[ 1 ],
 					dict[ match.children[ 2 ].lastElementChild.src.replace( /^.*[\\\/]/, '' ).split( "." )[ 0 ] ],
@@ -343,7 +344,8 @@ function isEmpty( arr ) {
 
 function getNextRivals( team ) {
 	const teams = getTeams();
-	const week = getObj( 'primera' );
+	const objID = window.location.pathname.replace( /\//g, '' );
+	const week = getObj( objID );
 	const arr = [ ...week[ team ].vs, team ];
 	const filtered = teams.filter( el => !arr.includes( el ) );
 	return filtered
@@ -355,7 +357,7 @@ function getNextRivalsAvg( team ) {
 	const table = getTable();
 	let sum = 0;
 	nextRivals.forEach( rival => {
-		return sum += table[ rival ].pts / table[ rival ].played;
+		return sum += table[ rival ].pts;
 	} );
 	return Math.round( sum * 100 / nextRivals.length ) / 100
 }
