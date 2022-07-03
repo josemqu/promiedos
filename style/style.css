@@ -26,8 +26,6 @@ table#posiciones tbody tr:hover {
     visibility: hidden;
     min-width: max-content;
     background-color: #962D2C;
-    /* #00612D */
-    ;
     color: #fff;
     text-align: center;
     border-radius: 3px;
