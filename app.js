@@ -19,6 +19,8 @@ saveObj(obj, objID);
 mouseOver();
 mouseLeave();
 mouseDown();
+mouseOverTd();
+unselectSpans();
 
 function saveObj(obj, objID) {
 	if (Object.keys(obj).length) {
@@ -53,6 +55,26 @@ function mouseLeave() {
 		.forEach((node) =>
 			node.addEventListener("mouseleave", mouseLevaeHandler, false)
 		);
+}
+
+function mouseOverTd() {
+	document
+		.querySelectorAll("div#fixturein > table > tbody > tr[id^='_'] > td")
+		.forEach((node) =>
+			node.addEventListener("mouseover", mouseOverHandlerTd, false)
+		);
+}
+
+function mouseOverHandlerTd(e) {
+	e.stopPropagation();
+	e.preventDefault();
+	// console.log(e.target.lastElementChild, e.target.lastElementChild.innerText);
+	// console.log(e.target, e.target.innerText);
+	let element = e.target.localName == "span" ? e.target : e.target.children[2];
+	if (element) {
+		team = element.innerText.replace(/\*/g, "").trim();
+		console.log(team);
+	}
 }
 
 window.addEventListener("scroll", scrollHandler, false);
@@ -98,6 +120,7 @@ function mouseOverHandler(e) {
 			obj = getObj(objID);
 			if (obj) {
 				showArrows(obj, team, element);
+				changeColor(team);
 				console.log(`${team}: `, getNextRivalsAvg(team));
 			}
 		}
@@ -125,6 +148,7 @@ function showArrows(obj, team, element) {
 function mouseLevaeHandler(e) {
 	e.stopPropagation();
 	e.preventDefault();
+	resetColor();
 	let tableDimensions =
 		globalEvent.target.parentElement.parentElement.getBoundingClientRect();
 	const prevDiv = document.querySelector("div.arrows");
@@ -426,4 +450,34 @@ function getNextRivalsAvg(team) {
 		return (sum += table[rival].pts);
 	});
 	return Math.round((sum * 100) / nextRivals.length) / 100;
+}
+
+// function that change backgroud color of td wich contains a span element with innerText = team and reset color for non selected team
+function changeColor(team) {
+	const spans = unselectSpans();
+
+	const selectedSpan = [...spans].filter((el) => el.innerText == team)[0];
+	selectedSpan.parentElement.classList.remove("unselected");
+	selectedSpan.parentElement.classList.add("selected");
+}
+
+function resetColor() {
+	const spans = document.querySelectorAll(
+		"div#fixturein > table > tbody > tr[id^='_'] > td > span.datoequipo"
+	);
+	[...spans].forEach((span) => {
+		span.parentElement.classList.replace("selected", "unselected");
+		// span.parentElement.classList.add("unselected");
+	});
+}
+
+function unselectSpans() {
+	const spans = document.querySelectorAll(
+		"div#fixturein > table > tbody > tr[id^='_'] > td > span.datoequipo"
+	);
+	[...spans].forEach((span) => {
+		span.parentElement.classList.remove("selected");
+		span.parentElement.classList.add("unselected");
+	});
+	return spans;
 }

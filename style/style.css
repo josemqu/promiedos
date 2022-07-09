@@ -59,3 +59,15 @@ table#posiciones tbody tr:hover {
     left: 50%;
     border-color: #962D2C transparent transparent transparent;
 }
+
+td.selected {
+    background-color: #F5F374;
+}
+
+td.unselected {
+    background-color: #E5E5E5;
+}
+
+td.unselected:hover {
+    background-color: #F5F374;
+}
