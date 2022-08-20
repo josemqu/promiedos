@@ -86,6 +86,8 @@ function mouseKeyDown() {
 					addHighlight(getNextRivals(team));
 				} else {
 					removeHighlight();
+					const rival = getRival(team);
+					highlightTeams([rival]);
 				}
 			}
 		},
@@ -153,6 +155,7 @@ function mouseOverHandler(e) {
 				showArrows(obj, team, element);
 				changeColor([team, rival]);
 				if (highlight) highlightTeams(getNextRivals(team));
+				highlightTeams([rival]);
 				// console.log(`${team}: `, getNextRivalsAvg(team));
 			}
 		}
@@ -181,6 +184,7 @@ function mouseLeaveHandler(e) {
 	e.stopPropagation();
 	e.preventDefault();
 	resetColor();
+	removeHighlight();
 	let tableDimensions =
 		globalEvent.target.parentElement.parentElement.getBoundingClientRect();
 	const prevDiv = document.querySelector("div.arrows");
