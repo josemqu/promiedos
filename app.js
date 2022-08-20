@@ -105,6 +105,7 @@ function mouseOverTdHandler(e) {
 		team = element.innerText.replace(/\*/g, "").trim();
 		let rival = getRival(team);
 		changeColor([team, rival]);
+		highlightTeams([team, rival]);
 		console.log(team, "vs", rival);
 	}
 }
@@ -154,8 +155,8 @@ function mouseOverHandler(e) {
 				const rival = getRival(team);
 				showArrows(obj, team, element);
 				changeColor([team, rival]);
-				if (highlight) highlightTeams(getNextRivals(team));
 				highlightTeams([rival]);
+				if (highlight) highlightTeams(getNextRivals(team));
 				// console.log(`${team}: `, getNextRivalsAvg(team));
 			}
 		}
