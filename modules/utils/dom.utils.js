@@ -33,7 +33,7 @@ export default {
 			}
 			const messures =
 				element.children[1].parentElement.getBoundingClientRect();
-			console.log(messures);
+			// console.log(messures);
 			let x;
 			if (
 				window.innerWidth - messures.right >
@@ -44,11 +44,11 @@ export default {
 				x = messures.left - div.getBoundingClientRect().width - 10;
 			}
 
-			console.log(
-				messures.right,
-				window.innerWidth,
-				messures.left - div.getBoundingClientRect().width - 10
-			);
+			// console.log(
+			// 	messures.right,
+			// 	window.innerWidth,
+			// 	messures.left - div.getBoundingClientRect().width - 10
+			// );
 			let y = messures.y - 2;
 			div.style.left = `${x}px`;
 			div.style.top = `${y}px`;

@@ -6,6 +6,7 @@ import Storage from "./modules/storage.js";
 console.log("app.js");
 console.log(getTableDict());
 const N_ARROWS = 5;
+let highlight = false;
 let obj = {};
 let team = "";
 let globalEvent;
@@ -20,6 +21,8 @@ mouseOver();
 mouseLeave();
 mouseDown();
 mouseOverTd();
+mouseLeaveTd();
+mouseKeyDown();
 unselectSpans();
 
 function saveObj(obj, objID) {
@@ -53,7 +56,7 @@ function mouseLeave() {
 	document
 		.querySelectorAll("#posiciones tbody")
 		.forEach((node) =>
-			node.addEventListener("mouseleave", mouseLevaeHandler, false)
+			node.addEventListener("mouseleave", mouseLeaveHandler, false)
 		);
 }
 
@@ -61,11 +64,36 @@ function mouseOverTd() {
 	document
 		.querySelectorAll("div#fixturein > table > tbody > tr[id^='_'] > td")
 		.forEach((node) =>
-			node.addEventListener("mouseover", mouseOverHandlerTd, false)
+			node.addEventListener("mouseover", mouseOverTdHandler, false)
 		);
 }
 
-function mouseOverHandlerTd(e) {
+function mouseLeaveTd() {
+	document
+		.querySelectorAll("div#fixturein > table > tbody > tr[id^='_'] > td")
+		.forEach((node) =>
+			node.addEventListener("mouseleave", unselectSpans, false)
+		);
+}
+
+function mouseKeyDown() {
+	document.body.addEventListener(
+		"keypress",
+		(e) => {
+			if (e.key == "n") {
+				highlight = !highlight;
+				if (highlight) {
+					addHighlight(getNextRivals(team));
+				} else {
+					removeHighlight();
+				}
+			}
+		},
+		false
+	);
+}
+
+function mouseOverTdHandler(e) {
 	e.stopPropagation();
 	e.preventDefault();
 	// console.log(e.target.lastElementChild, e.target.lastElementChild.innerText);
@@ -73,7 +101,9 @@ function mouseOverHandlerTd(e) {
 	let element = e.target.localName == "span" ? e.target : e.target.children[2];
 	if (element) {
 		team = element.innerText.replace(/\*/g, "").trim();
-		console.log(team);
+		let rival = getRival(team);
+		changeColor([team, rival]);
+		console.log(team, "vs", rival);
 	}
 }
 
@@ -116,12 +146,14 @@ function mouseOverHandler(e) {
 			team = e.target.parentElement.children[1].innerText
 				.replace(/\*/g, "")
 				.trim();
-			objID = objID || window.location.pathname.replace(/\//g, "");
+			objID = objID || window.location.pathname.replace(/\//g, "") || tableName;
 			obj = getObj(objID);
 			if (obj) {
+				const rival = getRival(team);
 				showArrows(obj, team, element);
-				changeColor(team);
-				console.log(`${team}: `, getNextRivalsAvg(team));
+				changeColor([team, rival]);
+				if (highlight) highlightTeams(getNextRivals(team));
+				// console.log(`${team}: `, getNextRivalsAvg(team));
 			}
 		}
 	}
@@ -145,7 +177,7 @@ function showArrows(obj, team, element) {
 	);
 }
 
-function mouseLevaeHandler(e) {
+function mouseLeaveHandler(e) {
 	e.stopPropagation();
 	e.preventDefault();
 	resetColor();
@@ -264,7 +296,7 @@ async function showTable(competition) {
 	div.classList.add("tabPos");
 	div.innerHTML = await getPositionTable(competition);
 	if (div.innerHTML != "undefined") {
-		console.log(div.innerHTML);
+		// console.log(div.innerHTML);
 		div.style.position = "absolute";
 		div.style.width = "380px";
 		div.style.left = getRightMargin() + "px";
@@ -367,7 +399,8 @@ function tituloHandler(e) {
 				mouseOver();
 				mouseLeave();
 				objID = tableName;
-			}, 1000);
+				console.log(objID);
+			}, 500);
 			previousTableName = tableName;
 		}
 	}
@@ -434,14 +467,13 @@ function isEmpty(arr) {
 
 function getNextRivals(team) {
 	const teams = getTeams();
-	const objID = window.location.pathname.replace(/\//g, "");
+	objID = window.location.pathname.replace(/\//g, "") || objID;
 	const week = getObj(objID);
 	const arr = [...week[team].vs, team];
 	const filtered = teams.filter((el) => !arr.includes(el));
 	return filtered;
 }
 
-// get average of pts for the next rivals of a team
 function getNextRivalsAvg(team) {
 	const nextRivals = getNextRivals(team);
 	const table = getTable();
@@ -453,12 +485,17 @@ function getNextRivalsAvg(team) {
 }
 
 // function that change backgroud color of td wich contains a span element with innerText = team and reset color for non selected team
-function changeColor(team) {
+function changeColor(teams) {
 	const spans = unselectSpans();
-
-	const selectedSpan = [...spans].filter((el) => el.innerText == team)[0];
-	selectedSpan.parentElement.classList.remove("unselected");
-	selectedSpan.parentElement.classList.add("selected");
+	const selectedSpans = [...spans].filter(
+		(el) => el.innerText == teams[0] || el.innerText == teams[1]
+	);
+	selectedSpans.forEach((span) => {
+		if (span) {
+			span.parentElement.classList.remove("unselected");
+			span.parentElement.classList.add("selected");
+		}
+	});
 }
 
 function resetColor() {
@@ -480,4 +517,34 @@ function unselectSpans() {
 		span.parentElement.classList.add("unselected");
 	});
 	return spans;
+}
+
+function highlightTeams(teams = []) {
+	if (isEmpty(teams)) return;
+	removeHighlight();
+	addHighlight(teams);
+}
+
+function removeHighlight() {
+	const trCollection = document.querySelectorAll("#posiciones > tbody > tr");
+	[...trCollection].forEach((tr) => {
+		tr.classList.remove("highlight");
+	});
+}
+
+function addHighlight(teams) {
+	const trCollection = document.querySelectorAll("#posiciones > tbody > tr");
+	teams.forEach((team) => {
+		const tr = [...trCollection].filter(
+			(el) => el.children[1].innerText == team
+		)[0];
+		tr.classList.add("highlight");
+	});
+}
+
+function getRival(team) {
+	const week = getMatchWeek();
+	let match = week.filter((el) => el.homeTeam == team || el.awayTeam == team);
+	let rival = match[0].homeTeam == team ? match[0].awayTeam : match[0].homeTeam;
+	return rival;
 }
