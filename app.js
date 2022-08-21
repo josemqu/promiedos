@@ -72,7 +72,14 @@ function mouseLeaveTd() {
 	document
 		.querySelectorAll("div#fixturein > table > tbody > tr[id^='_'] > td")
 		.forEach((node) =>
-			node.addEventListener("mouseleave", unselectSpans, false)
+			node.addEventListener(
+				"mouseleave",
+				() => {
+					unselectSpans();
+					removeHighlight();
+				},
+				false
+			)
 		);
 }
 
