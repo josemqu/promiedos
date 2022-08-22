@@ -9,7 +9,7 @@ const N_ARROWS = 5;
 let highlight = false;
 let obj = {};
 let team = "";
-let globalEvent;
+let globalEvent = "";
 let tableName = "";
 let previousTableName = "";
 let objID = window.location.pathname.replace(/\//g, "");
@@ -38,6 +38,7 @@ function getObj(objID) {
 
 function mouseDown() {
 	document
+
 		.querySelectorAll("#flechaatr, #flechaad, .cfecha, .cfechact, #principal")
 		.forEach((node) =>
 			node.addEventListener("mousedown", mouseDownHandler, false)
@@ -113,7 +114,7 @@ function mouseOverTdHandler(e) {
 		let rival = getRival(team);
 		changeColor([team, rival]);
 		highlightTeams([team, rival]);
-		console.log(team, "vs", rival);
+		// console.log(team, "vs", rival);
 	}
 }
 
@@ -122,10 +123,13 @@ window.addEventListener("scroll", scrollHandler, false);
 function mouseDownHandler(e) {
 	e.stopPropagation();
 	e.preventDefault();
-	let element =
-		globalEvent.target.parentElement.localName == "tr"
-			? globalEvent.target.parentElement
-			: globalEvent.target.parentElement.parentElement;
+	let element;
+	if (globalEvent) {
+		element =
+			globalEvent.target.parentElement.localName == "tr"
+				? globalEvent.target.parentElement
+				: globalEvent.target.parentElement.parentElement;
+	}
 	setTimeout(function () {
 		updateObj();
 		if (window.location.pathname.replace(/\//g, "")) {
@@ -550,13 +554,19 @@ function addHighlight(teams) {
 		const tr = [...trCollection].filter(
 			(el) => el.children[1].innerText == team
 		)[0];
-		tr.classList.add("highlight");
+		tr ? tr.classList.add("highlight") : null;
 	});
 }
 
 function getRival(team) {
 	const week = getMatchWeek();
+	if (isEmpty(week)) {
+		return;
+	}
 	let match = week.filter((el) => el.homeTeam == team || el.awayTeam == team);
+	if (isEmpty(match)) {
+		return;
+	}
 	let rival = match[0].homeTeam == team ? match[0].awayTeam : match[0].homeTeam;
 	return rival;
 }
