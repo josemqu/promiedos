@@ -280,6 +280,7 @@ function getTable() {
 
 function getMatchWeek() {
 	const matchWeek = getMatchWeekNumber();
+	getTableAtWeekDay(matchWeek);
 	const nodes = document.querySelectorAll(
 		"div#fixturein > table > tbody > tr[id^='_']"
 	);
@@ -452,6 +453,101 @@ function getGroupWeek() {
 		});
 	});
 	return arr;
+}
+
+/*
+'result' is an array of numbers, each number belongs to a week day.
+The value -1 count as a lost
+The value 0 count as a draw
+The value 1 count as a win
+
+The function countPoints summarize each win, lost, draw, played matches and
+calculated points given a week day of the first week match days
+*/
+
+function countPoints(result, weekDay) {
+	let matches = result.slice(0, weekDay);
+	let played = matches.length;
+	let won = matches.filter((el) => el == 1).length;
+	let lost = matches.filter((el) => el == -1).length;
+	let draw = matches.filter((el) => el == 0).length;
+	let pts = won * 3 + draw;
+	return {
+		played,
+		won,
+		lost,
+		draw,
+		pts,
+	};
+}
+
+/*
+'score' is an array of strings, where each string has the scores of each week match
+
+The function countGoals summarize each goal, received and scored, and the goal difference
+*/
+
+function countGoals(score, weekDay) {
+	let goals = score.slice(0, weekDay);
+	let scored = goals.reduce((acc, el) => acc + parseInt(el.split(" - ")[0]), 0);
+	let received = goals.reduce(
+		(acc, el) => acc + parseInt(el.split(" - ")[1]),
+		0
+	);
+	let difference = scored - received;
+	return {
+		scored,
+		received,
+		difference,
+	};
+}
+
+/**
+ * 'getTableAtWeekDay' construct all position table at a given weekday
+ * starts getting the obj of teams of the tournament
+ */
+
+function getTableAtWeekDay(weekDay) {
+	const teams = getObj("primera");
+	const table = [];
+	Object.keys(teams).forEach((team) => {
+		let points = countPoints(teams[team].result, weekDay);
+		let goals = countGoals(teams[team].score, weekDay);
+		table.push({
+			team,
+			pts: points.pts,
+			played: points.played,
+			won: points.won,
+			draw: points.draw,
+			lost: points.lost,
+			scored: goals.scored,
+			received: goals.received,
+			difference: goals.difference,
+		});
+	});
+
+	// sort table with next rules:
+	// 1. points
+	// 2. goal difference
+	// 3. scored goals
+	// 4. received goals
+	// 5. team name
+
+	const sortedTable = table.sort((a, b) => {
+		if (a.pts > b.pts) return -1;
+		if (a.pts < b.pts) return 1;
+		if (a.difference > b.difference) return -1;
+		if (a.difference < b.difference) return 1;
+		if (a.scored > b.scored) return -1;
+		if (a.scored < b.scored) return 1;
+		if (a.received < b.received) return -1;
+		if (a.received > b.received) return 1;
+		if (a.team < b.team) return -1;
+		if (a.team > b.team) return 1;
+	});
+
+	console.table(sortedTable);
+	return sortedTable;
 }
 
 function teamDict() {
