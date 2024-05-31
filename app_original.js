@@ -24,16 +24,6 @@ mouseOverTd();
 mouseLeaveTd();
 mouseKeyDown();
 unselectSpans();
-getTables();
-
-setTimeout(() => {
-  const teams = getTeams();
-  const teamCodes = {};
-  teams.forEach((team) => {
-    teamCodes[team] = getTeam(team).id;
-  });
-  saveObj(teamCodes, `${objID}_codes`);
-}, 0);
 
 function saveObj(obj, objID) {
   if (Object.keys(obj).length) {
@@ -141,7 +131,6 @@ function mouseDownHandler(e) {
         : globalEvent.target.parentElement.parentElement;
   }
   setTimeout(function () {
-    // printTables();
     updateObj();
     if (window.location.pathname.replace(/\//g, "")) {
       objID = window.location.pathname.replace(/\//g, "");
@@ -258,30 +247,6 @@ function getTeams() {
   return [...new Set(names)];
 }
 
-function getTeamsOfTable(tableName) {
-  const table = document.querySelector(`table.${tableName}`);
-  const namesColumn = table.querySelectorAll("tbody tr td:nth-child(2)");
-  const names = [];
-  namesColumn.forEach((el) =>
-    names.push(el.innerText.replace(/\*/g, "").trim())
-  );
-  return [...new Set(names)];
-}
-
-function getTables() {
-  const tableNames = getTablesCodes();
-  const tables = {};
-  tableNames.forEach((tableName) => {
-    const table = getTable(tableName);
-    tables[tableName] = {
-      name: table.name,
-      table: table.table,
-    };
-  });
-  console.log(tables);
-  return tables;
-}
-
 function getRow(name) {
   const matches = [];
   for (const table of document.querySelectorAll("table#posiciones tbody tr")) {
@@ -303,22 +268,19 @@ function getTableDict() {
   return table;
 }
 
-function getTable(tableCode) {
+function getTable() {
   const table = {};
-  const name = document
-    .querySelector(`table.${tableCode}`)
-    .previousSibling.textContent.replace(/arrow_upward/g, "")
-    .trim();
-  const teams = getTeamsOfTable(tableCode);
+  const teams = getTeams();
   teams.forEach((team) => {
     let teamData = getTeam(team);
     table[team] = teamData;
   });
-  return { name, table };
+  return table;
 }
 
 function getMatchWeek() {
   const matchWeek = getMatchWeekNumber();
+  getTableAtWeekDay(matchWeek);
   const nodes = document.querySelectorAll(
     "div#fixturein > table > tbody > tr[id^='_']"
   );
@@ -387,7 +349,6 @@ function initObj() {
         score: [],
         vs: [],
         homeOrAway: [],
-        teamCode: 0,
       })
   );
   return obj;
@@ -416,8 +377,6 @@ function updateObj() {
       "V",
     ]);
   });
-  const teamCodes = getObj(`${objID}_codes`);
-  console.log({ teamCodes });
   if (obj) {
     Object.keys(obj).forEach((key) => {
       let matches = arr.filter((el) => el[1] == key);
@@ -433,7 +392,6 @@ function updateObj() {
             obj[key].score[weekNum - 1] = score;
             obj[key].vs[weekNum - 1] = vs;
             obj[key].homeOrAway[weekNum - 1] = homeOrAway;
-            obj[key].teamCode = teamCodes ? teamCodes[key] : 0;
           }
         }
       });
@@ -458,7 +416,6 @@ function tituloHandler(e) {
         mouseOver();
         mouseLeave();
         objID = tableName;
-        console.log(tableName);
         console.log(objID);
       }, 500);
       previousTableName = tableName;
@@ -532,12 +489,9 @@ The function countGoals summarize each goal, received and scored, and the goal d
 
 function countGoals(score, weekDay) {
   let goals = score.slice(0, weekDay);
-  let scored = goals.reduce(
-    (acc, el) => acc + parseInt(el?.split(" - ")[0] || 0),
-    0
-  );
+  let scored = goals.reduce((acc, el) => acc + parseInt(el.split(" - ")[0]), 0);
   let received = goals.reduce(
-    (acc, el) => acc + parseInt(el?.split(" - ")[1] || 0),
+    (acc, el) => acc + parseInt(el.split(" - ")[1]),
     0
   );
   let difference = scored - received;
@@ -553,17 +507,14 @@ function countGoals(score, weekDay) {
  * starts getting the obj of teams of the tournament
  */
 
-function getTableAtWeekDay(tableCode) {
-  const weekDay = getMatchWeekNumber();
-  const teams = getObj(objID); // list of teams of the tournament with all its matches results
-  console.log(teams, objID);
+function getTableAtWeekDay(weekDay) {
+  const teams = getObj("primera");
   const table = [];
   Object.keys(teams).forEach((team) => {
     let points = countPoints(teams[team].result, weekDay);
     let goals = countGoals(teams[team].score, weekDay);
     table.push({
       team,
-      teamCode: teams[team].teamCode,
       pts: points.pts,
       played: points.played,
       won: points.won,
@@ -599,58 +550,6 @@ function getTableAtWeekDay(tableCode) {
   return sortedTable;
 }
 
-function getTablesAtWeekDay() {
-  const tables = {};
-  const tablesNames = getTablesCodes();
-  console.log(tablesNames);
-  tablesNames.forEach((table) => {
-    tableName = table;
-    obj = getObj(objID);
-    tables[tableName] = getTableAtWeekDay();
-  });
-
-  return tables;
-}
-
-function getTablesCodes() {
-  const tables = document.querySelectorAll("#posiciones");
-  const codes = [];
-  tables.forEach((table) => {
-    codes.push(table.classList[0]);
-  });
-  return [...new Set(codes)];
-}
-
-function printTable(tableCode) {
-  console.log({ tableCode });
-  const table = getTableAtWeekDay(tableCode);
-  const tableBody = document.querySelector(`table.${tableCode} > tbody`);
-  table.forEach((team, index) => {
-    let row = tableBody.children[index];
-    row.setAttribute("name", `${team.teamCode}`);
-    row.children[0].innerText = index + 1;
-    row.children[1].innerHTML = `<img src="images/18/${team.teamCode}.png" />${team.team}`;
-    row.children[2].innerText = team.pts;
-    row.children[3].innerText = team.played;
-    row.children[4].innerText = team.won;
-    row.children[5].innerText = team.draw;
-    row.children[6].innerText = team.lost;
-    row.children[7].innerText = team.scored;
-    row.children[8].innerText = team.received;
-    row.children[9].innerText = team.difference;
-  });
-}
-
-function printTables() {
-  const tablesNames = getTablesCodes();
-  console.log(tablesNames);
-  tablesNames.forEach((table) => {
-    tableName = table;
-    obj = getObj(objID);
-    printTable(table);
-  });
-}
-
 function teamDict() {
   const teams = getTeams();
   const dict = {};
@@ -673,7 +572,7 @@ function setDict() {
   return dict;
 }
 
-// function that check if an array is empty
+// function that chek if an array is empty
 function isEmpty(arr) {
   return arr.length === 0;
 }
