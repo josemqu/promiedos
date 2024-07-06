@@ -360,6 +360,56 @@ async function showTable(competition) {
   }
 }
 
+function showTablesOfTeams(teams, competition) {
+  getPositionTables(competition).then((tables) => {
+    const selectedTables = selectTablesWithTeams(teams, tables);
+
+    selectedTables.forEach((selectedTable) => {
+      const table = tables[selectedTable.tableIndex];
+      const tableContainer = document.createElement("div");
+      tableContainer.classList.add("table-container");
+      tableContainer.innerHTML = table.outerHTML;
+
+      document.body.appendChild(tableContainer);
+    });
+  });
+}
+
+async function showTables(teams, competition) {
+  const tabPos = document.querySelectorAll(".tabPos");
+  if (!isEmpty(tabPos)) tabPos.forEach((el) => el.remove());
+  const div = document.createElement("div");
+  div.classList.add("tabPos");
+  const allTables = await getPositionTables(competition);
+  const selectedTablesIndexes = selectTablesWithTeams(teams, allTables);
+  selectedTablesIndexes.forEach((index) => {
+    return (div.innerHTML += allTables[index].outerHTML);
+  });
+  if (div.innerHTML != "undefined") {
+    div.style.position = "absolute";
+    div.style.width = "380px";
+    div.style.left = getRightMargin() + "px";
+    div.style.top = -document.body.getBoundingClientRect().top + 20 + "px";
+    document.body.appendChild(div);
+  }
+}
+
+async function getPositionTables(competition) {
+  try {
+    let response = await fetch(`https://www.promiedos.com.ar/${competition}`);
+    let html = await response.text();
+    let parser = new DOMParser();
+    let doc = parser.parseFromString(html, "text/html");
+    let tables = doc.querySelectorAll("table#posiciones");
+    let tablesArray = Array.from(tables);
+    let zonas = tablesArray.map((table) => table.parentElement);
+    console.log({ zonas });
+    return zonas;
+  } catch (err) {
+    console.warn(err);
+  }
+}
+
 async function getPositionTable(competition) {
   try {
     let response = await fetch(`https://www.promiedos.com.ar/${competition}`);
@@ -371,6 +421,54 @@ async function getPositionTable(competition) {
   } catch (err) {
     console.warn(err);
   }
+}
+
+// async function getPositionTables(competition) {
+//   try {
+//     let response = await fetch(`https://www.promiedos.com.ar/${competition}`);
+//     let html = await response.text();
+//     let parser = new DOMParser();
+//     let doc = parser.parseFromString(html, "text/html");
+//     let tables = doc.querySelectorAll("table#posiciones");
+//     return tables;
+//   } catch (err) {
+//     console.warn(err);
+//   }
+// }
+
+function selectTablesWithTeams(teams, tables) {
+  const selectedTables = [];
+
+  tables.forEach((table, index) => {
+    const tableBody = table.querySelector("tbody");
+    if (!tableBody) return;
+
+    const rows = tableBody.querySelectorAll("tr");
+    const presentTeams = new Set();
+
+    rows.forEach((row) => {
+      const teamCell = row.querySelector("td:nth-child(2)");
+      if (!teamCell) return;
+
+      const teamName = teamCell.textContent.trim();
+
+      teams.forEach((team) => {
+        if (teamName.includes(team)) {
+          presentTeams.add(team);
+        }
+      });
+    });
+
+    if (presentTeams.size > 0) {
+      selectedTables.push({
+        tableIndex: index,
+        teams: Array.from(presentTeams),
+      });
+    }
+  });
+
+  const tableIndexes = selectedTables.map((table) => table.tableIndex);
+  return tableIndexes;
 }
 
 function getRightMargin() {
@@ -446,14 +544,45 @@ document
   .querySelectorAll(".tituloin")
   .forEach((node) => node.addEventListener("mouseover", tituloHandler, false));
 
+// function tituloHandler(e) {
+//   e.preventDefault();
+//   e.stopPropagation();
+//   let element = e.target;
+//   if (element.localName === "a") {
+//     tableName = element.href.split("/")[3];
+//     if (tableName !== previousTableName) {
+//       showTable(tableName);
+//       setTimeout(() => {
+//         mouseOver();
+//         mouseLeave();
+//         objID = tableName;
+//         console.log(tableName);
+//         console.log(objID);
+//       }, 500);
+//       previousTableName = tableName;
+//     }
+//   }
+// }
+
+function getTeamsOfElementTableName(element) {
+  const table = element.parentElement.parentElement.parentElement.parentElement;
+  const teams = [];
+  table.querySelectorAll(".game-t1 span").forEach((team) => {
+    teams.push(team.innerText);
+  });
+  return teams;
+}
+
 function tituloHandler(e) {
   e.preventDefault();
   e.stopPropagation();
   let element = e.target;
   if (element.localName === "a") {
     tableName = element.href.split("/")[3];
+    const teams = getTeamsOfElementTableName(element);
     if (tableName !== previousTableName) {
-      showTable(tableName);
+      // showTablesOfTeams(teams, tableName);
+      showTables(teams, tableName);
       setTimeout(() => {
         mouseOver();
         mouseLeave();
