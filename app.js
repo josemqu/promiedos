@@ -493,6 +493,7 @@ function initObj() {
 
 function updateObj() {
   const week = isEmpty(getGroupWeek()) ? getMatchWeek() : getGroupWeek(); //asignar el array no vacío   getMatchWeek() || getGroupWeek()
+  console.log({ week });
   const arr = [];
   week.forEach((game) => {
     arr.push([
@@ -896,3 +897,120 @@ function getRival(team) {
   let rival = match[0].homeTeam == team ? match[0].awayTeam : match[0].homeTeam;
   return rival;
 }
+
+const getAllMatchWeeks = async () => {
+  //get last week number
+  const lastWeek = +document
+    .querySelector("#fechmedio")
+    .innerText.split("\n")[0]
+    .split(" ")[1];
+
+  //get all match weeks
+  const allMatchWeeks = {};
+  for (let i = 1; i <= lastWeek; i++) {
+    allMatchWeeks[i] = await requestMatchWeek(i);
+  }
+  console.log(allMatchWeeks);
+  return allMatchWeeks;
+};
+
+const requestMatchWeek = async (week) => {
+  // Select the element with the class 'cfecha'
+  const element = document.querySelector(".cfecha");
+
+  // Extract the number using a regular expression on the 'onclick' attribute
+  const match = element.getAttribute("onclick").match(/'1_(\d+)'/);
+
+  const endpoint = `https://www.promiedos.com.ar/verfecha.php?fecha=${week}_${match[1]}`;
+  const matchWeek = await fetch(endpoint)
+    .then((res) => res.text())
+    .then((html) => {
+      //get match week
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, "text/html");
+      const matches = doc.querySelectorAll(
+        "div#fixturein > table > tbody > tr[id^='_']"
+      );
+      const arr = [];
+      matches.forEach((match) => {
+        arr.push(
+          new Match([
+            week,
+            match.children[1].children[2].innerText,
+            match.children[2].innerText,
+            match.children[3].innerText,
+            match.children[4].children[2].innerText,
+            match.children[0].innerText == "Final" ? true : false,
+            ,
+          ])
+        );
+      });
+      return arr;
+    });
+  return matchWeek;
+};
+
+const convertMatchWeeksToTeamsData = (weeksData) => {
+  // Prepare the structure for obj.json
+  const teamsData = {};
+
+  //get team codes
+  const teamCodes = getObj(`${objID}_codes`);
+
+  // Define function to get team codes
+  const getTeamCode = (teamName) => {
+    return teamCodes ? teamCodes[teamName] : 0;
+  };
+
+  // Process each week's matches
+  Object.values(weeksData).forEach((weekMatches) => {
+    weekMatches.forEach((match) => {
+      const { homeTeam, homeGoal, awayTeam, awayGoal, _resMatch, _finished } =
+        match;
+
+      const scoreHome = `${homeGoal} - ${awayGoal}`;
+      const scoreAway = `${awayGoal} - ${homeGoal}`;
+
+      // Initialize home team data if not present
+      if (!teamsData[homeTeam]) {
+        teamsData[homeTeam] = {
+          result: [],
+          score: [],
+          vs: [],
+          homeOrAway: [],
+          teamCode: getTeamCode(homeTeam),
+        };
+      }
+      // Add data for home team, for unfinished put nulls
+      teamsData[homeTeam].result.push(_finished ? _resMatch : null);
+      teamsData[homeTeam].score.push(_finished ? scoreHome : null);
+      teamsData[homeTeam].vs.push(_finished ? awayTeam : null);
+      teamsData[homeTeam].homeOrAway.push(_finished ? "L" : null);
+
+      // Initialize away team data if not present
+      if (!teamsData[awayTeam]) {
+        teamsData[awayTeam] = {
+          result: [],
+          score: [],
+          vs: [],
+          homeOrAway: [],
+          teamCode: getTeamCode(awayTeam),
+        };
+      }
+      // Add data for away team, for unfinished put nulls
+      teamsData[awayTeam].result.push(_finished ? -1 * _resMatch : null);
+      teamsData[awayTeam].score.push(_finished ? scoreAway : null);
+      teamsData[awayTeam].vs.push(_finished ? homeTeam : null);
+      teamsData[awayTeam].homeOrAway.push(_finished ? "V" : null);
+    });
+  });
+
+  console.log(teamsData);
+
+  // save teamsData to local storage
+  saveObj(teamsData, objID);
+
+  return teamsData;
+};
+
+convertMatchWeeksToTeamsData(await getAllMatchWeeks());
