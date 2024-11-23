@@ -3,8 +3,8 @@ import Match from "./modules/match.model.js";
 import DomUtils from "./modules/utils/dom.utils.js";
 import Storage from "./modules/storage.js";
 
-console.log("app.js");
-console.log(getTableDict());
+// console.log("app.js");
+// console.log(getTableDict());
 const N_ARROWS = 5;
 let highlight = false;
 let obj = {};
@@ -13,13 +13,19 @@ let globalEvent = "";
 let tableName = "";
 let previousTableName = "";
 let objID = window.location.pathname.replace(/\//g, "");
+let competitionId =
+  document
+    .querySelector(".cfecha")
+    ?.getAttribute("onclick")
+    ?.match(/'1_(\d+)'/)[1] || 0;
+
 initObj();
 obj = getObj(objID) || initObj();
-updateObj(obj);
+// updateObj(obj);
 saveObj(obj, objID);
 mouseOver();
 mouseLeave();
-mouseDown();
+// mouseDown();
 mouseOverTd();
 mouseLeaveTd();
 mouseKeyDown();
@@ -46,14 +52,13 @@ function getObj(objID) {
   return JSON.parse(localStorage.getItem(objID));
 }
 
-function mouseDown() {
-  document
-
-    .querySelectorAll("#flechaatr, #flechaad, .cfecha, .cfechact, #principal")
-    .forEach((node) =>
-      node.addEventListener("mousedown", mouseDownHandler, false)
-    );
-}
+// function mouseDown() {
+//   document
+//     .querySelectorAll("#flechaatr, #flechaad, .cfecha, .cfechact, #principal")
+//     .forEach((node) =>
+//       node.addEventListener("mousedown", mouseDownHandler, false)
+//     );
+// }
 
 function mouseOver() {
   document
@@ -278,7 +283,7 @@ function getTables() {
       table: table.table,
     };
   });
-  console.log(tables);
+  // console.log(tables);
   return tables;
 }
 
@@ -403,7 +408,7 @@ async function getPositionTables(competition) {
     let tables = doc.querySelectorAll("table#posiciones");
     let tablesArray = Array.from(tables);
     let zonas = tablesArray.map((table) => table.parentElement);
-    console.log({ zonas });
+    // console.log({ zonas });
     return zonas;
   } catch (err) {
     console.warn(err);
@@ -493,7 +498,7 @@ function initObj() {
 
 function updateObj() {
   const week = isEmpty(getGroupWeek()) ? getMatchWeek() : getGroupWeek(); //asignar el array no vacío   getMatchWeek() || getGroupWeek()
-  console.log({ week });
+  // console.log({ week });
   const arr = [];
   week.forEach((game) => {
     arr.push([
@@ -516,7 +521,7 @@ function updateObj() {
     ]);
   });
   const teamCodes = getObj(`${objID}_codes`);
-  console.log({ teamCodes });
+  // console.log({ teamCodes });
   if (obj) {
     Object.keys(obj).forEach((key) => {
       let matches = arr.filter((el) => el[1] == key);
@@ -588,8 +593,8 @@ function tituloHandler(e) {
         mouseOver();
         mouseLeave();
         objID = tableName;
-        console.log(tableName);
-        console.log(objID);
+        // console.log(tableName);
+        // console.log(objID);
       }, 500);
       previousTableName = tableName;
     }
@@ -686,7 +691,7 @@ function countGoals(score, weekDay) {
 function getTableAtWeekDay(tableCode) {
   const weekDay = getMatchWeekNumber();
   const teams = getObj(objID); // list of teams of the tournament with all its matches results
-  console.log(teams, objID);
+  // console.log(teams, objID);
   const table = [];
   Object.keys(teams).forEach((team) => {
     let points = countPoints(teams[team].result, weekDay);
@@ -732,7 +737,7 @@ function getTableAtWeekDay(tableCode) {
 function getTablesAtWeekDay() {
   const tables = {};
   const tablesNames = getTablesCodes();
-  console.log(tablesNames);
+  // console.log(tablesNames);
   tablesNames.forEach((table) => {
     tableName = table;
     obj = getObj(objID);
@@ -752,7 +757,7 @@ function getTablesCodes() {
 }
 
 function printTable(tableCode) {
-  console.log({ tableCode });
+  // console.log({ tableCode });
   const table = getTableAtWeekDay(tableCode);
   const tableBody = document.querySelector(`table.${tableCode} > tbody`);
   table.forEach((team, index) => {
@@ -773,7 +778,7 @@ function printTable(tableCode) {
 
 function printTables() {
   const tablesNames = getTablesCodes();
-  console.log(tablesNames);
+  // console.log(tablesNames);
   tablesNames.forEach((table) => {
     tableName = table;
     obj = getObj(objID);
@@ -898,19 +903,48 @@ function getRival(team) {
   return rival;
 }
 
+// Create the progress bar container
+const progressBarContainer = document.createElement("div");
+progressBarContainer.id = "progressBarContainer";
+
+// Create the progress bar itself
+const progressBar = document.createElement("div");
+progressBar.id = "progressBar";
+
+// Append the progress bar to the container and the container to the body
+progressBarContainer.appendChild(progressBar);
+document.body.appendChild(progressBarContainer);
+
+// Function to update progress
+function updateProgress(percent) {
+  progressBar.style.width = `${percent}%`;
+  if (percent >= 100) {
+    // Smoothly hide the progress bar after finishing
+    setTimeout(() => {
+      progressBarContainer.style.opacity = "0";
+      setTimeout(() => {
+        progressBarContainer.remove();
+      }, 500); // Allow fade-out before removing
+    }, 500);
+  }
+}
+
 const getAllMatchWeeks = async () => {
   //get last week number
   const lastWeek = +document
     .querySelector("#fechmedio")
-    .innerText.split("\n")[0]
-    .split(" ")[1];
+    ?.innerText.split("\n")[0]
+    ?.split(" ")[1];
 
   //get all match weeks
   const allMatchWeeks = {};
   for (let i = 1; i <= lastWeek; i++) {
     allMatchWeeks[i] = await requestMatchWeek(i);
+
+    // progress bar update
+    updateProgress((i / lastWeek) * 100);
   }
-  console.log(allMatchWeeks);
+  // console.log(allMatchWeeks);
   return allMatchWeeks;
 };
 
@@ -918,10 +952,7 @@ const requestMatchWeek = async (week) => {
   // Select the element with the class 'cfecha'
   const element = document.querySelector(".cfecha");
 
-  // Extract the number using a regular expression on the 'onclick' attribute
-  const match = element.getAttribute("onclick").match(/'1_(\d+)'/);
-
-  const endpoint = `https://www.promiedos.com.ar/verfecha.php?fecha=${week}_${match[1]}`;
+  const endpoint = `https://www.promiedos.com.ar/verfecha.php?fecha=${week}_${competitionId}`;
   const matchWeek = await fetch(endpoint)
     .then((res) => res.text())
     .then((html) => {
@@ -1005,7 +1036,7 @@ const convertMatchWeeksToTeamsData = (weeksData) => {
     });
   });
 
-  console.log(teamsData);
+  // console.log(teamsData);
 
   // save teamsData to local storage
   saveObj(teamsData, objID);

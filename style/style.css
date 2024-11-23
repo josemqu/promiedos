@@ -1,75 +1,95 @@
 table#posiciones tbody tr:hover {
-    background-color: #F5F374;
-    cursor: pointer;
+  background-color: #f5f374;
+  cursor: pointer;
 }
 
 table#posiciones tbody tr.highlight {
-    background-color: #d7f8c4;
+  background-color: #d7f8c4;
 }
 
 .arrows {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: fixed;
-    z-index: 10;
-    border-radius: 2px;
-    color: rgb(20, 20, 20, 1);
-    background-color: rgb(49, 45, 44, 1);
-    border: 1.8px solid #797979;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  z-index: 10;
+  border-radius: 2px;
+  color: rgb(20, 20, 20, 1);
+  background-color: rgb(49, 45, 44, 1);
+  border: 1.8px solid #797979;
 }
 
 .tooltip {
-    position: relative;
-    display: inline-block;
+  position: relative;
+  display: inline-block;
 }
 
 .tooltip .tiptext {
-    visibility: hidden;
-    min-width: max-content;
-    background-color: #962D2C;
-    color: #fff;
-    text-align: center;
-    border-radius: 3px;
-    padding: 6px;
-    position: absolute;
-    z-index: 1;
-    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.4);
+  visibility: hidden;
+  min-width: max-content;
+  background-color: #962d2c;
+  color: #fff;
+  text-align: center;
+  border-radius: 3px;
+  padding: 6px;
+  position: absolute;
+  z-index: 1;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.4);
 }
 
 .tooltip .tiptext::after {
-    content: "";
-    position: absolute;
-    border-width: 5px;
-    border-style: solid;
+  content: "";
+  position: absolute;
+  border-width: 5px;
+  border-style: solid;
 }
 
 .tooltip:hover .tiptext {
-    visibility: visible;
-    /* font-weight: bold; */
+  visibility: visible;
+  /* font-weight: bold; */
 }
 
 .tooltip.top .tiptext {
-    transform: translate(-50%);
-    bottom: 150%;
-    left: 50%;
+  transform: translate(-50%);
+  bottom: 150%;
+  left: 50%;
 }
 
 .tooltip.top .tiptext::after {
-    margin-left: -5px;
-    top: 100%;
-    left: 50%;
-    border-color: #962D2C transparent transparent transparent;
+  margin-left: -5px;
+  top: 100%;
+  left: 50%;
+  border-color: #962d2c transparent transparent transparent;
 }
 
 td.selected {
-    background-color: #F5F374;
+  background-color: #f5f374;
 }
 
 td.unselected {
-    background-color: #E5E5E5;
+  background-color: #e5e5e5;
 }
 
 td.unselected:hover {
-    background-color: #F5F374;
+  background-color: #f5f374;
+}
+
+#progressBarContainer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 5px;
+  background-color: transparent;
+  z-index: 10000;
+  transition: opacity 0.5s ease;
+  opacity: 1;
+}
+
+#progressBar {
+  width: 0%;
+  height: 100%;
+  background-color: #68a54b;
+  transition: width 0.5s ease;
+  opacity: 0.9;
 }
