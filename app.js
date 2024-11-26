@@ -43,7 +43,7 @@ setTimeout(() => {
 
 function saveObj(obj, objID) {
   if (Object.keys(obj).length) {
-    console.log("save", objID, obj);
+    // console.log("save", objID, obj);
     localStorage.setItem(objID, JSON.stringify(obj));
   }
 }

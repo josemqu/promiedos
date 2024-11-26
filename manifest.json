@@ -1,10 +1,10 @@
 {
 	"manifest_version": 3,
-	"name": "Promiedos",
-	"version": "0.0.1",
-	"description": "Estadísticas del Torneo de Futbol Argentino",
+	"name": "PromiedoX",
+	"version": "1.0.1",
+	"description": "Agregá funciones extra para mejorar tu experiencia con estadísticas de fútbol y análisis en tiempo real.",
 	"action": {
-		"default_title": "Futbol Argentino"
+		"default_title": "PromiedoX Chrome Extension"
 	},
 	"content_scripts": [ {
 		"js": [ "content.js" ],
@@ -17,7 +17,7 @@
 		"service_worker": "background.js",
 		"type": "module"
 	},
-	"permissions": [ "storage", "downloads" ],
+	"permissions": [ "storage" ],
 	"optional_permissions": [],
 	"web_accessible_resources": [ {
 		"resources": [
