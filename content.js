@@ -53,25 +53,3 @@ function imagesLoad() {
     (document.head || document.documentElement).appendChild(elem);
   });
 }
-
-// chrome.runtime.onMessage.addListener( function( msg, sender, sendResponse ) {
-// 	console.log( "Filename:", msg.file );
-// 	sendResponse( {
-// 		response: 'Message received.',
-// 		link: chrome.runtime.getURL( msg.file )
-// 	} )
-// } );
-
-// chrome.runtime.sendMessage( {
-// 	id: chrome.runtime.id
-// }, function( response ) {
-// 	console.log( response );
-// } );
-
-// div.parentNode.removeChild( div );
-
-// export default {
-// 	getExtensionID() {
-// 		chrome.runtime.id
-// 	}
-// };

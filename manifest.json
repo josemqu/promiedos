@@ -1,37 +1,40 @@
 {
-	"manifest_version": 3,
-	"name": "PromiedoX",
-	"version": "1.0.1",
-	"description": "Agregá funciones extra para mejorar tu experiencia con estadísticas de fútbol y análisis en tiempo real.",
-	"action": {
-		"default_title": "PromiedoX Chrome Extension"
-	},
-	"content_scripts": [ {
-		"js": [ "content.js" ],
-		"type": "module",
-		"css": [ "style/style.css" ],
-		"matches": [ "https://www.promiedos.com.ar/*" ],
-		"run_at": "document_end"
-	} ],
-	"background": {
-		"service_worker": "background.js",
-		"type": "module"
-	},
-	"permissions": [ "storage" ],
-	"optional_permissions": [],
-	"web_accessible_resources": [ {
-		"resources": [
-			"app.js",
-			"modules/match.model.js",
-			"modules/team.model.js",
-			"modules/storage.js",
-			"modules/utils/utils.js",
-			"style/style.css",
-			"modules/utils/dom.utils.js",
-			"modules/utils/icons/up.svg",
-			"modules/utils/icons/equal.svg",
-			"modules/utils/icons/down.svg"
-		],
-		"matches": [ "https://www.promiedos.com.ar/*" ]
-	} ]
+  "manifest_version": 3,
+  "name": "PromiedoX",
+  "version": "1.0.1",
+  "description": "Agregá funciones extra para mejorar tu experiencia con estadísticas de fútbol y análisis en tiempo real.",
+  "action": {
+    "default_title": "PromiedoX Chrome Extension"
+  },
+  "content_scripts": [
+    {
+      "js": ["content.js"],
+      "type": "module",
+      "css": ["style/style.css"],
+      "matches": ["https://www.promiedos.com.ar/*"],
+      "run_at": "document_end"
+    }
+  ],
+  "background": {
+    "type": "module"
+  },
+  "permissions": ["storage"],
+  "optional_permissions": [],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "app.js",
+        "modules/match.model.js",
+        "modules/team.model.js",
+        "modules/storage.js",
+        "modules/utils/utils.js",
+        "style/style.css",
+        "modules/utils/dom.utils.js",
+        "modules/utils/icons/up.svg",
+        "modules/utils/icons/equal.svg",
+        "modules/utils/icons/down.svg"
+      ],
+      "matches": ["https://www.promiedos.com.ar/*"]
+    }
+  ]
 }
