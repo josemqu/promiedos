@@ -194,17 +194,17 @@ function showArrows(obj, team, element) {
   DomUtils.arrows(
     element,
     obj[team]
-      ? obj[team].result.filter((el) => el != null).slice(-N_ARROWS)
-      : obj[team].result,
+      ? obj[team]?.result.filter((el) => el != null).slice(-N_ARROWS)
+      : obj[team]?.result,
     obj[team]
-      ? obj[team].score.filter((el) => el != null).slice(-N_ARROWS)
-      : obj[team].score,
+      ? obj[team]?.score.filter((el) => el != null).slice(-N_ARROWS)
+      : obj[team]?.score,
     obj[team]
-      ? obj[team].vs.filter((el) => el != null).slice(-N_ARROWS)
-      : obj[team].vs,
+      ? obj[team]?.vs.filter((el) => el != null).slice(-N_ARROWS)
+      : obj[team]?.vs,
     obj[team]
-      ? obj[team].homeOrAway.filter((el) => el != null).slice(-N_ARROWS)
-      : obj[team].homeOrAway
+      ? obj[team]?.homeOrAway.filter((el) => el != null).slice(-N_ARROWS)
+      : obj[team]?.homeOrAway
   );
 }
 
@@ -214,7 +214,7 @@ function mouseLeaveHandler(e) {
   resetColor();
   removeHighlight();
   let tableDimensions =
-    globalEvent.target.parentElement.parentElement.getBoundingClientRect();
+    globalEvent?.target?.parentElement?.parentElement?.getBoundingClientRect();
   const prevDiv = document.querySelector("div.arrows");
   if (prevDiv) {
     setTimeout(() => {
