@@ -2,12 +2,12 @@ import Team from "./modules/team.model.js";
 import Match from "./modules/match.model.js";
 import DomUtils from "./modules/utils/dom.utils.js";
 import Storage from "./modules/storage.js";
+import { saveOption, getOption } from "./modules/utils/options.js";
 addLabelToTitles();
 
-// console.log("app.js");
 // console.log(getTableDict());
-let N_ARROWS = 5;
-let highlight = false;
+let N_ARROWS = getOption("N_ARROWS") || 5;
+let HIGHLIGHT_NEXT = getOption("HIGHLIGHT_NEXT") || false;
 let obj = {};
 let team = "";
 let globalEvent = "";
@@ -123,8 +123,9 @@ function mouseKeyDown() {
     "keypress",
     (e) => {
       if (e.key == "n") {
-        highlight = !highlight;
-        if (highlight) {
+        HIGHLIGHT_NEXT = !HIGHLIGHT_NEXT;
+        saveOption("HIGHLIGHT_NEXT", HIGHLIGHT_NEXT);
+        if (HIGHLIGHT_NEXT) {
           addHighlight(getNextRivals(team));
         } else {
           removeHighlight();
@@ -134,7 +135,10 @@ function mouseKeyDown() {
       } else {
         // mange keypress of numbers 0-9 and change the number of arrows to show (0 corresponds to 10 arrows)
         const number = parseInt(e.key);
-        if (number >= 0 && number <= 9) N_ARROWS = number == 0 ? 10 : number;
+        if (number >= 0 && number <= 9) {
+          N_ARROWS = number == 0 ? 10 : number;
+          saveOption("N_ARROWS", number);
+        }
         showArrows(obj, team, globalEvent.target.parentElement);
       }
     },
@@ -207,7 +211,7 @@ function mouseOverHandler(e) {
         showArrows(obj, team, element);
         changeColor([team, rival]);
         highlightTeams([rival]);
-        if (highlight) highlightTeams(getNextRivals(team));
+        if (HIGHLIGHT_NEXT) highlightTeams(getNextRivals(team));
         // console.log(`${team}: `, getNextRivalsAvg(team));
       }
     }

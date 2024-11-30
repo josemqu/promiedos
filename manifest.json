@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "PromiedoX",
-  "version": "1.1.10",
+  "version": "1.1.11",
   "description": "Agregá funciones extra para mejorar tu experiencia con estadísticas de fútbol y análisis en tiempo real.",
   "action": {
     "default_title": "PromiedoX Chrome Extension"
@@ -30,6 +30,7 @@
         "modules/utils/utils.js",
         "style/style.css",
         "modules/utils/dom.utils.js",
+        "modules/utils/options.js",
         "modules/utils/icons/up.svg",
         "modules/utils/icons/equal.svg",
         "modules/utils/icons/down.svg"
