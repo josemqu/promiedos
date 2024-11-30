@@ -2,6 +2,7 @@ import Team from "./modules/team.model.js";
 import Match from "./modules/match.model.js";
 import DomUtils from "./modules/utils/dom.utils.js";
 import Storage from "./modules/storage.js";
+addLabelToTitles();
 
 // console.log("app.js");
 // console.log(getTableDict());
@@ -21,7 +22,7 @@ let competitionId =
 
 initObj();
 obj = getObj(objID) || initObj();
-// updateObj(obj);
+updateObj(obj);
 saveObj(obj, objID);
 mouseOver();
 mouseLeave();
@@ -60,12 +61,30 @@ function getObj(objID) {
 //     );
 // }
 
+function addLabelToTitles() {
+  document.querySelectorAll(".tituloin").forEach((title) => {
+    const competitionName = title.firstChild.firstChild.href.split("/")[3];
+
+    const div = document.createElement("div");
+    div.classList.add("new-title");
+    div.innerHTML = title.innerHTML;
+    title.children[0].innerHTML = "";
+    title.children[0].appendChild(div);
+
+    const label = document.createElement("label");
+    label.innerHTML = "↗️";
+    label.classList.add("label-title");
+    label.dataset.competition = competitionName;
+    div.appendChild(label);
+  });
+
+  mouseOverTitulo();
+}
+
 function mouseOver() {
-  document
-    .querySelectorAll("#posiciones tbody tr")
-    .forEach((node) =>
-      node.addEventListener("mouseover", mouseOverHandler, false)
-    );
+  document.querySelectorAll("#posiciones tbody tr").forEach((node) => {
+    node.addEventListener("mouseover", mouseOverHandler, false);
+  });
 }
 
 function mouseLeave() {
@@ -396,10 +415,10 @@ async function showTables(teams, competition) {
     return (div.innerHTML += allTables[index].outerHTML);
   });
   if (div.innerHTML != "undefined") {
-    div.style.position = "absolute";
-    div.style.width = "380px";
+    // div.style.position = "absolute";
+    // div.style.width = "380px";
     div.style.left = getRightMargin() + "px";
-    div.style.top = -document.body.getBoundingClientRect().top + 20 + "px";
+    div.style.top = -document.body.getBoundingClientRect().top + 30 + "px";
     document.body.appendChild(div);
   }
 }
@@ -482,9 +501,9 @@ function selectTablesWithTeams(teams, tables) {
 }
 
 function getRightMargin() {
-  const element = document.querySelector("tr.tituloin > td > a");
+  const element = document.querySelector("tr .new-title a");
   const messures = element.children[1].parentElement.getBoundingClientRect();
-  return messures.right + (window.innerWidth - messures.right - 380) / 4;
+  return messures.right + (window.innerWidth - messures.right - 0) / 4;
 }
 
 function initObj() {
@@ -551,9 +570,13 @@ function updateObj() {
   return obj;
 }
 
-document
-  .querySelectorAll(".tituloin")
-  .forEach((node) => node.addEventListener("mouseover", tituloHandler, false));
+function mouseOverTitulo() {
+  document
+    .querySelectorAll(".label-title")
+    .forEach((node) =>
+      node.addEventListener("mouseover", tituloHandler, false)
+    );
+}
 
 // function tituloHandler(e) {
 //   e.preventDefault();
@@ -588,22 +611,38 @@ function tituloHandler(e) {
   e.preventDefault();
   e.stopPropagation();
   let element = e.target;
-  if (element.localName === "a") {
-    tableName = element.href.split("/")[3];
-    const teams = getTeamsOfElementTableName(element);
-    if (tableName !== previousTableName) {
-      // showTablesOfTeams(teams, tableName);
-      showTables(teams, tableName);
-      setTimeout(() => {
-        mouseOver();
-        mouseLeave();
-        objID = tableName;
-        // console.log(tableName);
-        // console.log(objID);
-      }, 500);
-      previousTableName = tableName;
-    }
+  tableName = element.dataset.competition;
+  console.log({ tableName });
+  const teams = getTeamsOfElementTableName(element);
+
+  if (tableName !== previousTableName) {
+    showTables(teams, tableName);
+    setTimeout(() => {
+      mouseOver();
+      mouseLeave();
+      objID = tableName;
+      // console.log(tableName);
+      // console.log(objID);
+    }, 500);
+    previousTableName = tableName;
   }
+
+  // if (element.localName === "a") {
+  //   tableName = element.href.split("/")[3];
+  //   const teams = getTeamsOfElementTableName(element);
+  //   if (tableName !== previousTableName) {
+  //     // showTablesOfTeams(teams, tableName);
+  //     showTables(teams, tableName);
+  //     setTimeout(() => {
+  //       mouseOver();
+  //       mouseLeave();
+  //       objID = tableName;
+  //       // console.log(tableName);
+  //       // console.log(objID);
+  //     }, 500);
+  //     previousTableName = tableName;
+  //   }
+  // }
 }
 
 function getGroupWeek() {

@@ -93,3 +93,33 @@ td.unselected:hover {
   transition: width 0.5s ease;
   opacity: 0.9;
 }
+
+/*
+
+    div.style.position = "absolute";
+    div.style.width = "380px";
+    div.style.left = getRightMargin() + "px";
+    div.style.top = -document.body.getBoundingClientRect().top + 30 + "px";
+
+*/
+
+.tabPos {
+  position: absolute;
+  width: 380px;
+}
+
+.new-title {
+  position: relative !important;
+}
+
+.label-title {
+  position: absolute !important;
+  font-size: 16px;
+  text-align: right;
+  text-shadow: none;
+  border: none;
+  background: none;
+  right: -2px;
+  top: -3px;
+  z-index: 1;
+}
