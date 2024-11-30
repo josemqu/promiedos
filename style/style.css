@@ -1,10 +1,35 @@
+/* create a color pallete */
+:root {
+  --color-light: #f5f5f5;
+  --color-dark: #333;
+
+  --color-white: #fff;
+  --color-black: #000;
+
+  --color-gray: #797979;
+  --color-gray-light: #e5e5e5;
+  --color-gray-dark: #333;
+
+  --color-green: #68a54b;
+  --color-light-green: #d7f8c4;
+  --color-red: #962d2c;
+  --color-light-red: #964d4c;
+
+  --color-blue: #2c3e50;
+  --color-blue-light: #3498db;
+  --color-blue-dark: #2980b9;
+
+  --color-yellow: #f5f374;
+  --color-orange: #f39c12;
+}
+
 table#posiciones tbody tr:hover {
-  background-color: #f5f374;
+  background-color: var(--color-yellow);
   cursor: pointer;
 }
 
 table#posiciones tbody tr.highlight {
-  background-color: #d7f8c4;
+  background-color: var(--color-light-green);
 }
 
 .arrows {
@@ -16,7 +41,7 @@ table#posiciones tbody tr.highlight {
   border-radius: 2px;
   color: rgb(20, 20, 20, 1);
   background-color: rgb(49, 45, 44, 1);
-  border: 1.8px solid #797979;
+  border: 1.8px solid var(--color-gray);
 }
 
 .tooltip {
@@ -27,7 +52,8 @@ table#posiciones tbody tr.highlight {
 .tooltip .tiptext {
   visibility: hidden;
   min-width: max-content;
-  background-color: #962d2c;
+  background-color: var(--color-red);
+  border: 1px solid var(--color-light-red);
   color: #fff;
   text-align: center;
   border-radius: 3px;
@@ -35,6 +61,7 @@ table#posiciones tbody tr.highlight {
   position: absolute;
   z-index: 1;
   box-shadow: 0 5px 10px rgba(0, 0, 0, 0.4);
+  text-shadow: 0 2px 2px var(--color-black);
 }
 
 .tooltip .tiptext::after {
@@ -59,19 +86,19 @@ table#posiciones tbody tr.highlight {
   margin-left: -5px;
   top: 100%;
   left: 50%;
-  border-color: #962d2c transparent transparent transparent;
+  border-color: var(--color-red) transparent transparent transparent;
 }
 
 td.selected {
-  background-color: #f5f374;
+  background-color: var(--color-yellow);
 }
 
 td.unselected {
-  background-color: #e5e5e5;
+  background-color: var(--color-light);
 }
 
 td.unselected:hover {
-  background-color: #f5f374;
+  background-color: var(--color-yellow);
 }
 
 #progressBarContainer {
@@ -89,19 +116,10 @@ td.unselected:hover {
 #progressBar {
   width: 0%;
   height: 100%;
-  background-color: #68a54b;
+  background-color: var(--color-green);
   transition: width 0.5s ease;
   opacity: 0.9;
 }
-
-/*
-
-    div.style.position = "absolute";
-    div.style.width = "380px";
-    div.style.left = getRightMargin() + "px";
-    div.style.top = -document.body.getBoundingClientRect().top + 30 + "px";
-
-*/
 
 .tabPos {
   position: absolute;
