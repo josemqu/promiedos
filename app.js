@@ -9,7 +9,6 @@ addLabelToTitles();
 let N_ARROWS = getOption("N_ARROWS") || 5;
 let HIGHLIGHT_NEXT = getOption("HIGHLIGHT_NEXT") == "true" ? true : false;
 
-console.log({ N_ARROWS, HIGHLIGHT_NEXT });
 let obj = {};
 let team = "";
 let globalEvent = "";
@@ -214,7 +213,6 @@ function mouseOverHandler(e) {
         showArrows(obj, team, element);
         changeColor([team, rival]);
         highlightTeams([rival]);
-        console.log({ HIGHLIGHT_NEXT });
         if (HIGHLIGHT_NEXT) highlightTeams(getNextRivals(team));
         // console.log(`${team}: `, getNextRivalsAvg(team));
       }
