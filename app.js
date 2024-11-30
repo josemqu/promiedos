@@ -72,10 +72,11 @@ function addLabelToTitles() {
     title.children[0].innerHTML = "";
     title.children[0].appendChild(div);
 
-    const label = document.createElement("label");
+    const label = document.createElement("a");
     label.innerHTML = "↗️";
     label.classList.add("label-title");
     label.dataset.competition = competitionName;
+    label.href = `https://www.promiedos.com.ar/${competitionName}`;
     div.appendChild(label);
   });
 
@@ -617,11 +618,18 @@ function tituloHandler(e) {
   e.preventDefault();
   e.stopPropagation();
   let element = e.target;
+  console.log(element);
   tableName = element.dataset.competition;
   console.log({ tableName });
   const teams = getTeamsOfElementTableName(element);
 
   if (tableName !== previousTableName) {
+    // clear all selected classes
+    document.querySelectorAll(".label-title").forEach((el) => {
+      el.classList.remove("selected");
+    });
+
+    element.classList.add("selected");
     showTables(teams, tableName);
     setTimeout(() => {
       mouseOver();

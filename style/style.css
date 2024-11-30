@@ -120,6 +120,11 @@ td.unselected:hover {
   border: none;
   background: none;
   right: -2px;
-  top: -3px;
+  top: -2px;
   z-index: 1;
+  transition: all 0.1s;
+}
+
+.label-title.selected {
+  text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px #fff, 0 0 20px #0f0;
 }
