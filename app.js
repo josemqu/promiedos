@@ -5,7 +5,7 @@ import Storage from "./modules/storage.js";
 
 // console.log("app.js");
 // console.log(getTableDict());
-const N_ARROWS = 5;
+let N_ARROWS = 5;
 let highlight = false;
 let obj = {};
 let team = "";
@@ -112,6 +112,11 @@ function mouseKeyDown() {
           const rival = getRival(team);
           highlightTeams([rival]);
         }
+      } else {
+        // mange keypress of numbers 0-9 and change the number of arrows to show (0 corresponds to 10 arrows)
+        const number = parseInt(e.key);
+        if (number >= 0 && number <= 9) N_ARROWS = number == 0 ? 10 : number;
+        showArrows(obj, team, globalEvent.target.parentElement);
       }
     },
     false
